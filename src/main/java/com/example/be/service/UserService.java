@@ -3,6 +3,7 @@ package com.example.be.service;
 import com.example.be.dto.request.UserRequest;
 import com.example.be.dto.response.UserInforDTO;
 import com.example.be.entity.User;
+import com.example.be.enums.Role;
 import com.example.be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +28,7 @@ public class UserService {
         }
         User user = new User();
         user.setUsername(request.getUsername());
+        user.setRole(Role.USER.toString());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
         user.setBirthday(request.getBirthday());
