@@ -33,6 +33,9 @@ public class ShowTimeService {
     public ShowTime getShowtimeId(Long id){
         return showTimeRepository.findById(id).orElseThrow(() -> new RuntimeException("Showtime not found"));
     }
+    public List<ShowTime> getAllShowtimes(){
+        return showTimeRepository.findAll();
+    }
 
     public ShowTime updateShowtime(Long id, ShowTime showtimeDetails) {
         ShowTime existingShowtime = getShowtimeId(id);

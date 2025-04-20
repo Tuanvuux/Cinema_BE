@@ -19,6 +19,9 @@ public class Room {
 
     private String name;
     private int seatCount;
+    private int numberOfcolumns;
+    private int numberOfrows;
+    private String screenType;
     private String status;
 
     @Column(updatable = false)

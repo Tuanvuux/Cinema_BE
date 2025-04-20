@@ -28,6 +28,9 @@ public class RoomService {
         Room room = getRoomById(id);
         room.setName(roomDetails.getName());
         room.setSeatCount(roomDetails.getSeatCount());
+        room.setNumberOfcolumns(roomDetails.getNumberOfcolumns());
+        room.setNumberOfrows(roomDetails.getNumberOfrows());
+        room.setScreenType(roomDetails.getScreenType());
         room.setStatus(roomDetails.getStatus());
         return roomRepository.save(room);
     }

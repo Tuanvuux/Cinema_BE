@@ -2,11 +2,15 @@ package com.example.be.service;
 
 import com.example.be.dto.request.UserRequest;
 import com.example.be.dto.response.UserInforDTO;
+import com.example.be.entity.Movie;
 import com.example.be.entity.User;
 import com.example.be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -31,6 +35,7 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setBirthday(request.getBirthday());
         user.setGender(request.getGender());
+        user.setAddress(request.getAddress());
         user.setPhone(request.getPhone());
         user.setFullName(request.getFullName());
         userRepository.save(user);
@@ -39,5 +44,15 @@ public class UserService {
     public UserInforDTO findByUsername(String username){
         UserInforDTO userInforDTO = new UserInforDTO();
         return userInforDTO;
+    }
+
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 }
