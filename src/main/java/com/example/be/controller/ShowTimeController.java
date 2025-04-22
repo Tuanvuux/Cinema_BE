@@ -1,4 +1,5 @@
 package com.example.be.controller;
+import com.example.be.dto.response.ShowTimeAdminDTO;
 import com.example.be.dto.response.ShowTimeResponse;
 import com.example.be.entity.Movie;
 import com.example.be.entity.Room;
@@ -59,4 +60,8 @@ public class ShowTimeController {
     @GetMapping("")
     public ResponseEntity<List<ShowTimeResponse>> getAllShowTime() {
         return ResponseEntity.ok(showTimeService.findAllShowTime());}
+    @GetMapping("admin")
+    public List<ShowTimeAdminDTO> getShowtime() {
+        return showTimeService.getAllShowtimes();
+    }
 }
