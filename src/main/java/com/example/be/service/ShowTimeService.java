@@ -1,5 +1,6 @@
 package com.example.be.service;
 
+import com.example.be.dto.response.ShowTimeAdminDTO;
 import com.example.be.dto.response.ShowTimeResponse;
 import com.example.be.entity.Movie;
 import com.example.be.entity.Room;
@@ -92,5 +93,22 @@ public class ShowTimeService {
         }
 
         return new ArrayList<>(movieShowTimeMap.values());
+    }
+
+    public List<ShowTimeAdminDTO> getAllShowtimes(){
+        List<ShowTimeAdminDTO> showTimeAdminDTOList = new ArrayList<>();
+        List<ShowTime> showTimes = showTimeRepository.findAll();
+        for(ShowTime showTime: showTimes)
+        {
+            ShowTimeAdminDTO showTimeAdminDTO = new ShowTimeAdminDTO();
+            showTimeAdminDTO.setShowtimeId(showTime.getShowtimeId());
+            showTimeAdminDTO.setStartTime(showTime.getStartTime());
+            showTimeAdminDTO.setEndTime(showTime.getEndTime());
+            showTimeAdminDTO.setShowDate(showTime.getShowDate());
+            showTimeAdminDTO.setMovieName(showTime.getMovie().getName());
+            showTimeAdminDTO.setRoomName(showTime.getRoom().getName());
+            showTimeAdminDTOList.add(showTimeAdminDTO);
+        }
+        return showTimeAdminDTOList;
     }
 }
