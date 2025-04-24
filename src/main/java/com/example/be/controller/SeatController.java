@@ -2,12 +2,19 @@ package com.example.be.controller;
 
 import com.example.be.dto.request.SeatReleaseRequest;
 import com.example.be.dto.request.SeatSelectionRequest;
+import com.example.be.dto.response.SeatDTO;
+import com.example.be.entity.Room;
+import com.example.be.entity.Seat;
+import com.example.be.service.RoomService;
 import com.example.be.service.SeatService;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/seats")
+@CrossOrigin(origins = "http://localhost:5173")
 public class SeatController {
 
     private final SeatService seatService;
@@ -34,5 +41,39 @@ public class SeatController {
         // Gửi thông báo cho tất cả các client về sự thay đổi trạng thái ghế
         messagingTemplate.convertAndSend("/topic/seats/" + request.getShowtimeId(),
                 "Seat " + request.getSeatId() + " released.");
+    }
+
+    @GetMapping("/all")
+    public List<Seat> getAllSeats() {
+        return seatService.getSeats();
+    }
+
+    @PostMapping("/all")
+    public Seat addSeat(@RequestBody Seat seat) {
+        return seatService.addSeat(seat);
+    }
+    @GetMapping
+    public List<SeatDTO> getSeatsWithRoomInfo() {
+        return seatService.getSeatsWithRoomInfo();
+    }
+
+    @GetMapping("/{id}")
+    public Seat getSeatById(@PathVariable Long id) {
+        return seatService.getSeatById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteSeat(@PathVariable Long id) {
+        seatService.deleteSeat(id);
+    }
+    
+    @PostMapping
+    public SeatDTO addSeat(@RequestBody SeatDTO seatDTO) {
+        return seatService.addSeatDTO(seatDTO);
+    }
+
+    @PutMapping("/{id}")
+    public SeatDTO updateSeat(@PathVariable Long id, @RequestBody SeatDTO seatDTO) {
+        return seatService.updateSeat(id, seatDTO);
     }
 }
