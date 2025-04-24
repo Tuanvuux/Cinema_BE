@@ -7,6 +7,8 @@ import com.example.be.entity.Room;
 import com.example.be.entity.Seat;
 import com.example.be.service.RoomService;
 import com.example.be.service.SeatService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +18,9 @@ import java.util.List;
 @RequestMapping("/seats")
 @CrossOrigin(origins = "http://localhost:5173")
 public class SeatController {
-
+    @Autowired
     private final SeatService seatService;
+    @Autowired
     private final SimpMessagingTemplate messagingTemplate;
 
     public SeatController(SeatService seatService, SimpMessagingTemplate messagingTemplate) {
@@ -41,6 +44,10 @@ public class SeatController {
         // Gửi thông báo cho tất cả các client về sự thay đổi trạng thái ghế
         messagingTemplate.convertAndSend("/topic/seats/" + request.getShowtimeId(),
                 "Seat " + request.getSeatId() + " released.");
+    }
+    @GetMapping("/{roomId}")
+    public List<Seat> getSeatsByRoomId(@PathVariable Long roomId) {
+        return seatService.getSeatsByRoomId(roomId);
     }
 
     @GetMapping("/all")
@@ -66,7 +73,7 @@ public class SeatController {
     public void deleteSeat(@PathVariable Long id) {
         seatService.deleteSeat(id);
     }
-    
+
     @PostMapping
     public SeatDTO addSeat(@RequestBody SeatDTO seatDTO) {
         return seatService.addSeatDTO(seatDTO);

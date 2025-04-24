@@ -26,6 +26,9 @@ public class SeatService {
     public void releaseSeat(String showtimeId, String seatId) {
         // Lógica thả ghế, ví dụ: xóa trạng thái ghế khỏi Redis
     }
+    public List<Seat> getSeatsByRoomId(Long roomId) {
+        return seatRepository.getSeatsByRoomId(roomId);
+    }
 
     public List<Seat> getSeats() {
         return seatRepository.findAll();

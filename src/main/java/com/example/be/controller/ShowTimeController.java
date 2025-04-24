@@ -1,6 +1,6 @@
 package com.example.be.controller;
-
-
+import com.example.be.dto.response.ShowTimeAdminDTO;
+import com.example.be.dto.response.ShowTimeResponse;
 import com.example.be.entity.Category;
 import com.example.be.entity.Movie;
 import com.example.be.entity.Room;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:5173")
 public class ShowTimeController {
     @Autowired
-    private ShowTimeService showtimeservice;
+    private ShowTimeService showTimeService;
 
     @Autowired
     private MovieService movieservice;
@@ -43,30 +43,37 @@ public class ShowTimeController {
             }
             showtimeData.setRoom(roomOpt.get());
 
-            ShowTime savedShowtime = showtimeservice.saveShowtime(showtimeData);
+            ShowTime savedShowtime = showTimeService.saveShowtime(showtimeData);
             return ResponseEntity.status(201).body(savedShowtime);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<ShowTime> getShowtimes() {
-        return showtimeservice.getAllShowtimes();
+        return showTimeService.getAllShowtime();
     }
 
     @GetMapping("/{id}")
     public ShowTime getShowtimeById(@PathVariable Long id) {
-        return showtimeservice.getShowtimeId(id);
+        return showTimeService.getShowtimeId(id);
     }
 
     @PutMapping("/{id}")
     public ShowTime updateShowtime(@PathVariable Long id, @RequestBody ShowTime showtime) {
-        return showtimeservice.updateShowtime(id, showtime);
+        return showTimeService.updateShowtime(id, showtime);
     }
 
     @DeleteMapping("/{id}")
     public String deleteShowtime(@PathVariable Long id) {
-        return showtimeservice.deletedShowtime(id);
+        return showTimeService.deletedShowtime(id);
+    }
+    @GetMapping("")
+    public ResponseEntity<List<ShowTimeResponse>> getAllShowTime() {
+        return ResponseEntity.ok(showTimeService.findAllShowTime());}
+    @GetMapping("admin")
+    public List<ShowTimeAdminDTO> getShowtime() {
+        return showTimeService.getAllShowtimes();
     }
 }
