@@ -1,6 +1,7 @@
 package com.example.be.controller;
 import com.example.be.dto.response.ShowTimeAdminDTO;
 import com.example.be.dto.response.ShowTimeResponse;
+import com.example.be.entity.Category;
 import com.example.be.entity.Movie;
 import com.example.be.entity.Room;
 import com.example.be.entity.ShowTime;
@@ -10,6 +11,7 @@ import com.example.be.service.ShowTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +48,16 @@ public class ShowTimeController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/all")
+    public List<ShowTime> getShowtimes() {
+        return showTimeService.getAllShowtime();
+    }
+
+    @GetMapping("/{id}")
+    public ShowTime getShowtimeById(@PathVariable Long id) {
+        return showTimeService.getShowtimeId(id);
     }
 
     @PutMapping("/{id}")

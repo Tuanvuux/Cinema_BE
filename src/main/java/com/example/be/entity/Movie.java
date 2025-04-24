@@ -26,6 +26,7 @@ public class Movie {
     private String director;
     private String actor;
     private String description;
+    private String country;
     private int duration;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;

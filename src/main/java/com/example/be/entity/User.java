@@ -1,5 +1,6 @@
 package com.example.be.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -26,8 +27,11 @@ public class User {
     private String phone;
     private String role;
     private String gender;
-    
 
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "is_active")
+    @Nullable
+    private Boolean isActive = true;
 }
