@@ -72,8 +72,8 @@ public class ShowTimeController {
     @GetMapping("")
     public ResponseEntity<List<ShowTimeResponse>> getAllShowTime() {
         return ResponseEntity.ok(showTimeService.findAllShowTime());}
-    @GetMapping("admin")
-    public List<ShowTimeAdminDTO> getShowtime() {
-        return showTimeService.getAllShowtimes();
-    }
+//    @GetMapping("admin")
+//    public List<ShowTimeAdminDTO> getShowtime() {
+//        return showTimeService.getAllShowtimes();
+//    }
 }
