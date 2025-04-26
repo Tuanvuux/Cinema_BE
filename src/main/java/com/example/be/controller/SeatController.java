@@ -50,16 +50,16 @@ public class SeatController {
         return seatService.getSeatsByRoomId(roomId);
     }
 
-    @GetMapping("/all")
-    public List<Seat> getAllSeats() {
-        return seatService.getSeats();
-    }
+//    @GetMapping("/all")
+//    public List<Seat> getAllSeats() {
+//        return seatService.getSeats();
+//    }
 
     @PostMapping("/all")
     public Seat addSeat(@RequestBody Seat seat) {
         return seatService.addSeat(seat);
     }
-    @GetMapping
+    @GetMapping("/admin")
     public List<SeatDTO> getSeatsWithRoomInfo() {
         return seatService.getSeatsWithRoomInfo();
     }
@@ -69,17 +69,17 @@ public class SeatController {
         return seatService.getSeatById(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public void deleteSeat(@PathVariable Long id) {
         seatService.deleteSeat(id);
     }
 
-    @PostMapping
+    @PostMapping("/admin")
     public SeatDTO addSeat(@RequestBody SeatDTO seatDTO) {
         return seatService.addSeatDTO(seatDTO);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/{id}")
     public SeatDTO updateSeat(@PathVariable Long id, @RequestBody SeatDTO seatDTO) {
         return seatService.updateSeat(id, seatDTO);
     }

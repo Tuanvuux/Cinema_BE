@@ -18,7 +18,7 @@ public class AccountController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
+    @GetMapping("/admin")
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -29,7 +29,7 @@ public class AccountController {
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PatchMapping("/{id}/toggle-delete")
+    @PatchMapping("/admin/{id}/toggle-delete")
     public ResponseEntity<User> toggleDeleteStatus(@PathVariable("id") Long accountId, @RequestBody Map<String, Boolean> statusMap) {
         Boolean isActive = statusMap.get("isActive");
         if (isActive == null) {

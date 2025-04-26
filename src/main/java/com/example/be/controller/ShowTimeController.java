@@ -28,7 +28,7 @@ public class ShowTimeController {
     @Autowired
     private RoomService roomservice;
 
-    @PostMapping
+    @PostMapping("/admin")
     public ResponseEntity<?> addShowtime(@RequestBody ShowTime showtimeData) {
         try {
             Optional<Movie> movieOpt = movieservice.getMovieById(showtimeData.getMovie().getMovieId());
@@ -50,7 +50,7 @@ public class ShowTimeController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/admin")
     public List<ShowTime> getShowtimes() {
         return showTimeService.getAllShowtime();
     }
@@ -60,12 +60,12 @@ public class ShowTimeController {
         return showTimeService.getShowtimeId(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/{id}")
     public ShowTime updateShowtime(@PathVariable Long id, @RequestBody ShowTime showtime) {
         return showTimeService.updateShowtime(id, showtime);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public String deleteShowtime(@PathVariable Long id) {
         return showTimeService.deletedShowtime(id);
     }
