@@ -18,7 +18,6 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())  // Tắt CORS nếu không cần cấu hình CORS
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/**").permitAll()  // Cho phép tất cả các API mà không cần xác thực
-                        .requestMatchers("/**").permitAll()  // Cho phép tất cả các yêu cầu từ package com.trinh.thread
                         .anyRequest().authenticated()  // Các yêu cầu khác yêu cầu xác thực
                 )
                 .httpBasic(Customizer.withDefaults());  // Bật Basic HTTP Authentication

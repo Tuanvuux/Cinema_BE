@@ -1,9 +1,12 @@
 package com.example.be.service;
 
 import com.example.be.dto.response.SeatDTO;
+import com.example.be.dto.response.SeatWithLockResponse;
 import com.example.be.entity.Room;
 import com.example.be.entity.Seat;
+import com.example.be.entity.ShowTime;
 import com.example.be.repository.SeatRepository;
+import com.example.be.repository.ShowTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,12 @@ public class SeatService {
     @Autowired
     private RoomService roomService;
 
+    @Autowired
+    private SeatLockService seatLockService;
+
+    @Autowired
+    private ShowTimeRepository showTimeRepository;
+
     public void selectSeat(String showtimeId, String seatId) {
         // Lógica chọn ghế, ví dụ: lưu trạng thái ghế vào Redis
     }
@@ -26,6 +35,7 @@ public class SeatService {
     public void releaseSeat(String showtimeId, String seatId) {
         // Lógica thả ghế, ví dụ: xóa trạng thái ghế khỏi Redis
     }
+
     public List<Seat> getSeatsByRoomId(Long roomId) {
         return seatRepository.getSeatsByRoomId(roomId);
     }
@@ -87,6 +97,7 @@ public class SeatService {
 
         return seat;
     }
+
     public SeatDTO addSeatDTO(SeatDTO seatDTO) {
         // Xử lý logic để chuyển từ DTO thành Entity và lưu
         Seat seat = convertToEntity(seatDTO);
@@ -121,4 +132,30 @@ public class SeatService {
         Seat updatedSeat = seatRepository.save(existingSeat);
         return convertToDTO(updatedSeat);
     }
+
+    public List<SeatWithLockResponse> getSeatsWithLock(Long showtimeId) {
+        // Lấy suất chiếu
+        ShowTime showtime = showTimeRepository.findById(showtimeId)
+                .orElseThrow(() -> new RuntimeException("Showtime not found"));
+
+        Long roomId = showtime.getRoom().getId(); // lấy ID của phòng chiếu từ suất chiếu
+
+        // Lấy danh sách ghế của phòng chiếu đó
+        List<Seat> seats = seatRepository.getSeatsByRoomId(roomId);
+
+        return seats.stream().map(seat -> {
+            boolean isLocked = seatLockService.isSeatLocked(showtimeId, seat.getSeatId());
+            return new SeatWithLockResponse(
+                    seat.getSeatId(),
+                    seat.getSeatName(),
+                    seat.getRowLabel(),
+                    seat.getColumnNumber(),
+                    seat.getStatus(),
+                    seat.getSeatType(),
+                    isLocked
+            );
+        }).collect(Collectors.toList());
+    }
+
+
 }

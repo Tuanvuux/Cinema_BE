@@ -3,6 +3,7 @@ package com.example.be.controller;
 import com.example.be.dto.request.SeatReleaseRequest;
 import com.example.be.dto.request.SeatSelectionRequest;
 import com.example.be.dto.response.SeatDTO;
+import com.example.be.dto.response.SeatWithLockResponse;
 import com.example.be.entity.Room;
 import com.example.be.entity.Seat;
 import com.example.be.service.RoomService;
@@ -31,7 +32,6 @@ public class SeatController {
     @PostMapping("/select")
     public void selectSeat(@RequestBody SeatSelectionRequest request) {
         seatService.selectSeat(request.getShowtimeId(), request.getSeatId());
-
         // Gửi thông báo cho tất cả các client về sự thay đổi trạng thái ghế
         messagingTemplate.convertAndSend("/topic/seats/" + request.getShowtimeId(),
                 "Seat " + request.getSeatId() + " selected.");
@@ -82,5 +82,10 @@ public class SeatController {
     @PutMapping("/admin/{id}")
     public SeatDTO updateSeat(@PathVariable Long id, @RequestBody SeatDTO seatDTO) {
         return seatService.updateSeat(id, seatDTO);
+    }
+    @GetMapping("/with-lock/{showtimeId}")
+    public ResponseEntity<List<SeatWithLockResponse>> getSeatsWithLock(@PathVariable Long showtimeId) {
+        List<SeatWithLockResponse> seats = seatService.getSeatsWithLock(showtimeId);
+        return ResponseEntity.ok(seats);
     }
 }
