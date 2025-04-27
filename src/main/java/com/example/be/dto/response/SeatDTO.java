@@ -1,5 +1,6 @@
 package com.example.be.dto.response;
 
+import com.example.be.entity.SeatInfo;
 import com.example.be.enums.SeatStatus;
 import com.example.be.enums.SeatType;
 import lombok.AllArgsConstructor;
@@ -17,5 +18,5 @@ public class SeatDTO {
     private String rowLabel;
     private int columnNumber;
     private SeatStatus status;
-    private SeatType seatType;
+    private SeatInfo seatInfo;
 }
