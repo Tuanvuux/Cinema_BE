@@ -20,11 +20,20 @@ public class LoginService {
     private JwtUtil jwtUtil;
 
     public String login(String username, String password) {
+        // Kiểm tra tài khoản có tồn tại không
         User user = userRepository.findByUsername(username);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            // Tạo và trả về token nếu thông tin hợp lệ
+        if (user == null) {
+            // Tài khoản không tồn tại
+            return null;
+        }
+
+        // Kiểm tra mật khẩu
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            // Mật khẩu đúng, tạo token và trả về
             return jwtUtil.generateToken(username);
         }
+
+        // Mật khẩu sai
         return null;
     }
 

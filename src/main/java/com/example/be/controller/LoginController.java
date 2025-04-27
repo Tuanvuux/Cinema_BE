@@ -1,4 +1,5 @@
 package com.example.be.controller;
+import com.example.be.dto.request.LoginRequest;
 import com.example.be.dto.response.TokenResponse;
 import com.example.be.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,17 +8,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/api/auth")
 public class LoginController {
 
     @Autowired
     private LoginService loginService;
 
-    @PostMapping("")
-    public ResponseEntity<?> login(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password) {
-        String token = loginService.login(username, password);
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        String token = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -25,6 +24,6 @@ public class LoginController {
         }
 
         // Đăng nhập thành công, trả về token
-        return ResponseEntity.ok(new TokenResponse(token) );
+        return ResponseEntity.ok(new TokenResponse(token));
     }
 }
