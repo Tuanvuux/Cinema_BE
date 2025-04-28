@@ -1,6 +1,5 @@
 package com.example.be.entity;
 import com.example.be.enums.SeatStatus;
-import com.example.be.enums.SeatType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,8 +28,9 @@ public class Seat {
     @Enumerated(EnumType.STRING)
     private SeatStatus status; // Trạng thái ghế (AVAILABLE, SELECTED, BOOKED)
 
-    @Enumerated(EnumType.STRING)
-    private SeatType seatType; // REGULAR, VIP, COUPLE
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "seat_info_id", referencedColumnName = "id")
+    private SeatInfo seatInfo;
 
 }
 

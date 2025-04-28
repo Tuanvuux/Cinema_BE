@@ -81,7 +81,7 @@ public class SeatService {
         dto.setRowLabel(seat.getRowLabel());
         dto.setColumnNumber(seat.getColumnNumber());
         dto.setStatus(seat.getStatus());
-        dto.setSeatType(seat.getSeatType());
+        dto.setSeatInfo(seat.getSeatInfo());
 
         return dto;
     }
@@ -94,7 +94,7 @@ public class SeatService {
         seat.setRowLabel(dto.getRowLabel());
         seat.setColumnNumber(dto.getColumnNumber());
         seat.setStatus(dto.getStatus());
-        seat.setSeatType(dto.getSeatType());
+        seat.setSeatInfo(dto.getSeatInfo());
         // Lưu ý: Room sẽ được thiết lập riêng
 
         return seat;
@@ -123,7 +123,7 @@ public class SeatService {
         existingSeat.setRowLabel(seatDTO.getRowLabel());
         existingSeat.setColumnNumber(seatDTO.getColumnNumber());
         existingSeat.setStatus(seatDTO.getStatus());
-        existingSeat.setSeatType(seatDTO.getSeatType());
+        existingSeat.setSeatInfo(seatDTO.getSeatInfo());
 
         // Cập nhật room nếu được cung cấp
         if (seatDTO.getRoomId() != null) {
@@ -153,7 +153,7 @@ public class SeatService {
                     seat.getRowLabel(),
                     seat.getColumnNumber(),
                     seat.getStatus(),
-                    seat.getSeatType(),
+                    seat.getSeatInfo().getName(),
                     isLocked
             );
         }).collect(Collectors.toList());

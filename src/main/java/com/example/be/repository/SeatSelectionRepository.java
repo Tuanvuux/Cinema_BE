@@ -12,5 +12,5 @@ public interface SeatSelectionRepository extends JpaRepository<SeatSelection, In
     boolean existsByShowTimeIdAndSeatIdAndSeatStatus(Long showtimeId, Long seatId, SeatStatus seatStatus);
     SeatSelection findByShowTimeIdAndSeatId(Long showtimeId, Long seatId);
     void deleteByUserIdAndShowTimeIdAndSeatIdAndSeatStatus(Long userId, Long showTimeId, Long seatId, String seatStatus);
-
+    List<SeatSelection> findByShowTimeId(Long showTimeId);
 }

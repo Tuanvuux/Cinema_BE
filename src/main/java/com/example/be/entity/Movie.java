@@ -25,8 +25,7 @@ public class Movie {
     private String name;
     private String director;
     private String actor;
-
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 10000)
     private String description;
     private String country;
     private int duration;
