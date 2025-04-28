@@ -5,6 +5,7 @@ import com.example.be.dto.response.SeatWithLockResponse;
 import com.example.be.entity.Room;
 import com.example.be.entity.Seat;
 import com.example.be.entity.ShowTime;
+import com.example.be.enums.SeatStatus;
 import com.example.be.repository.SeatRepository;
 import com.example.be.repository.ShowTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ public class SeatService {
     }
 
     public Seat addSeat(Seat seat) {
+        seat.setStatus(SeatStatus.AVAILABLE);
         return seatRepository.save(seat);
     }
 

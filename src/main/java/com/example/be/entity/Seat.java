@@ -30,7 +30,7 @@ public class Seat {
     private SeatStatus status; // Trạng thái ghế (AVAILABLE, SELECTED, BOOKED)
 
     @Enumerated(EnumType.STRING)
-    private SeatType seatType; // REGULAR, VIP, COUPLE, PREMIUM, BED
+    private SeatType seatType; // REGULAR, VIP, COUPLE
 
 }
 
