@@ -1,7 +1,7 @@
 package com.example.be.controller;
 
 import com.example.be.entity.User;
-import com.example.be.exception.ResourceNotFoundException;
+import com.example.be.exception.CustomerException;
 import com.example.be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class AccountController {
         }
 
         User user = userService.getUserById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + accountId));
+                .orElseThrow(() -> new CustomerException("Account not found with id: " + accountId));
 
         user.setIsActive(isActive);
         User updatedMovie = userService.saveUser(user);

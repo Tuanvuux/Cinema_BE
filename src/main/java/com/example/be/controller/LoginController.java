@@ -1,6 +1,6 @@
 package com.example.be.controller;
 import com.example.be.dto.request.LoginRequest;
-import com.example.be.dto.response.TokenResponse;
+import com.example.be.dto.response.UserResponse;
 import com.example.be.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,14 +16,14 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        String token = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        UserResponse userResponse = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
-        if (token == null) {
+        if (userResponse == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Tên đăng nhập hoặc mật khẩu không chính xác!");
         }
 
         // Đăng nhập thành công, trả về token
-        return ResponseEntity.ok(new TokenResponse(token));
+        return ResponseEntity.ok(userResponse);
     }
 }

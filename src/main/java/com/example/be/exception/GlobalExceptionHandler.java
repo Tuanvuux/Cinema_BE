@@ -13,8 +13,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     // Xử lý lỗi không tìm thấy tài nguyên
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    @ExceptionHandler(CustomerException.class)
+    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(CustomerException ex) {
         Map<String, String> response = new HashMap<>();
         response.put("error", "Not Found");
         response.put("message", ex.getMessage());
@@ -39,4 +39,5 @@ public class GlobalExceptionHandler {
         response.put("message", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }
