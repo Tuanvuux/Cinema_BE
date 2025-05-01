@@ -2,7 +2,7 @@ package com.example.be.controller;
 
 import com.example.be.entity.Movie;
 import com.example.be.entity.Category;
-import com.example.be.exception.ResourceNotFoundException;
+import com.example.be.exception.CustomerException;
 import com.example.be.repository.MovieRepository;
 import com.example.be.service.MovieService;
 import com.example.be.service.CategoryService;
@@ -91,7 +91,7 @@ public class MovieController {
         }
 
         Movie movie = movieService.getMovieById(movieId)
-                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + movieId));
+                .orElseThrow(() -> new CustomerException("Movie not found with id: " + movieId));
 
         movie.setIsDelete(isDelete);
         Movie updatedMovie = movieService.saveMovie(movie);
