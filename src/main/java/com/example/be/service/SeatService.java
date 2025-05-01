@@ -4,14 +4,18 @@ import com.example.be.dto.response.SeatDTO;
 import com.example.be.dto.response.SeatWithLockResponse;
 import com.example.be.entity.Room;
 import com.example.be.entity.Seat;
+import com.example.be.entity.SeatInfo;
 import com.example.be.entity.ShowTime;
 import com.example.be.enums.SeatStatus;
+import com.example.be.enums.SeatType;
+import com.example.be.repository.SeatInfoRepository;
 import com.example.be.repository.SeatRepository;
 import com.example.be.repository.ShowTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +33,9 @@ public class SeatService {
     @Autowired
     private ShowTimeRepository showTimeRepository;
 
+    @Autowired
+    private SeatInfoRepository seatInfoRepository;
+
     public void selectSeat(String showtimeId, String seatId) {
         // Lógica chọn ghế, ví dụ: lưu trạng thái ghế vào Redis
     }
@@ -41,8 +48,8 @@ public class SeatService {
         return seatRepository.getSeatsByRoomId(roomId);
     }
 
-    public List<Seat> getSeats() {
-        return seatRepository.findAll();
+    public List<SeatInfo> getSeatInfo() {
+        return seatInfoRepository.findAll();
     }
 
     public Seat getSeatById(Long seatId) {
@@ -81,7 +88,10 @@ public class SeatService {
         dto.setRowLabel(seat.getRowLabel());
         dto.setColumnNumber(seat.getColumnNumber());
         dto.setStatus(seat.getStatus());
-        dto.setSeatInfo(seat.getSeatInfo());
+        if(seat.getSeatInfo() != null) {
+            dto.setSeatInfoId(seat.getSeatInfo().getId());
+            dto.setSeatInfoName(seat.getSeatInfo().getName().toString());
+        }
 
         return dto;
     }
@@ -94,7 +104,7 @@ public class SeatService {
         seat.setRowLabel(dto.getRowLabel());
         seat.setColumnNumber(dto.getColumnNumber());
         seat.setStatus(dto.getStatus());
-        seat.setSeatInfo(dto.getSeatInfo());
+//        seat.setSeatInfo(dto.getSeatInfo());
         // Lưu ý: Room sẽ được thiết lập riêng
 
         return seat;
@@ -108,6 +118,11 @@ public class SeatService {
         if (seatDTO.getRoomId() != null) {
             Room room = roomService.getRoomById(seatDTO.getRoomId());
             seat.setRoom(room);
+        }
+        if (seatDTO.getSeatInfoId() != null) {
+            SeatInfo seatInfo = seatInfoRepository.findById(seatDTO.getSeatInfoId())
+                    .orElseThrow(() -> new RuntimeException("SeatInfo not found"));
+            seat.setSeatInfo(seatInfo);
         }
 
         Seat savedSeat = seatRepository.save(seat);
@@ -123,12 +138,17 @@ public class SeatService {
         existingSeat.setRowLabel(seatDTO.getRowLabel());
         existingSeat.setColumnNumber(seatDTO.getColumnNumber());
         existingSeat.setStatus(seatDTO.getStatus());
-        existingSeat.setSeatInfo(seatDTO.getSeatInfo());
 
         // Cập nhật room nếu được cung cấp
         if (seatDTO.getRoomId() != null) {
             Room room = roomService.getRoomById(seatDTO.getRoomId());
             existingSeat.setRoom(room);
+        }
+
+        if (seatDTO.getSeatInfoId() != null) {
+            SeatInfo seatInfo = seatInfoRepository.findById(seatDTO.getSeatInfoId())
+                    .orElseThrow(() -> new RuntimeException("SeatInfo not found"));
+            existingSeat.setSeatInfo(seatInfo);
         }
 
         Seat updatedSeat = seatRepository.save(existingSeat);

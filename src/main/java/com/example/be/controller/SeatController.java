@@ -6,6 +6,7 @@ import com.example.be.dto.response.SeatDTO;
 import com.example.be.dto.response.SeatWithLockResponse;
 import com.example.be.entity.Room;
 import com.example.be.entity.Seat;
+import com.example.be.entity.SeatInfo;
 import com.example.be.service.RoomService;
 import com.example.be.service.SeatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,11 @@ public class SeatController {
     @GetMapping("/admin")
     public List<SeatDTO> getSeatsWithRoomInfo() {
         return seatService.getSeatsWithRoomInfo();
+    }
+
+    @GetMapping("/admin/seatinfo")
+    public List<SeatInfo> seatinfo() {
+        return seatService.getSeatInfo();
     }
 
     @GetMapping("/{id}")

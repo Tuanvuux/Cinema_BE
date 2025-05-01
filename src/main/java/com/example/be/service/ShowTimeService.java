@@ -11,6 +11,7 @@ import com.example.be.repository.ShowTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -24,6 +25,10 @@ public class ShowTimeService {
 
     @Autowired
     private RoomRepository roomRepository;
+    @Autowired
+    private MovieService movieService;
+    @Autowired
+    private RoomService roomService;
 
 
     public ShowTime addShowtime(ShowTime showtime){
@@ -65,6 +70,7 @@ public class ShowTimeService {
     public ShowTime saveShowtime(ShowTime showtime){
         return showTimeRepository.save(showtime);
     }
+
     public List<ShowTimeResponse> findAllShowTime() {
         LocalDate today = LocalDate.now();
 
@@ -113,5 +119,76 @@ public class ShowTimeService {
             showTimeAdminDTOList.add(showTimeAdminDTO);
         }
         return showTimeAdminDTOList;
+    }
+
+    public List<Room> getAvailableRooms(LocalDate showDate, LocalTime startTime, LocalTime endTime) {
+        return showTimeRepository.findAvailableRooms(showDate, startTime, endTime);
+    }
+
+    public ShowTimeAdminDTO convertToDTO(ShowTime showtime){
+        ShowTimeAdminDTO stDto = new ShowTimeAdminDTO();
+
+        stDto.setShowtimeId(showtime.getShowtimeId());
+        stDto.setShowDate(showtime.getShowDate());
+        stDto.setStartTime(showtime.getStartTime());
+        stDto.setEndTime(showtime.getEndTime());
+
+        if(showtime.getMovie() != null){
+            stDto.setMovieName(showtime.getMovie().getName());
+            stDto.setMovieId(showtime.getMovie().getMovieId());
+        }
+
+        if(showtime.getRoom() != null){
+            stDto.setRoomName(showtime.getRoom().getName());
+            stDto.setRoomId(showtime.getRoom().getId());
+        }
+        return stDto;
+    }
+
+    public ShowTime convertToEntity(ShowTimeAdminDTO stDto){
+        ShowTime st = new ShowTime();
+        st.setShowtimeId(stDto.getShowtimeId());
+        st.setShowDate(stDto.getShowDate());
+        st.setStartTime(stDto.getStartTime());
+        st.setEndTime(stDto.getEndTime());
+
+        return st;
+    }
+
+    public ShowTimeAdminDTO addShowTimeAdminDTO(ShowTimeAdminDTO stDto){
+        ShowTime st = convertToEntity(stDto);
+
+        if (stDto.getMovieId() != null) {
+            Movie movie = movieRepository.findById(stDto.getMovieId())
+                    .orElseThrow(() -> new RuntimeException("movie not found"));
+            st.setMovie(movie);
+        }
+        if (stDto.getRoomId() != null) {
+            Room room = roomService.getRoomById(stDto.getRoomId());
+            st.setRoom(room);
+        }
+
+        ShowTime saveShowTime = showTimeRepository.save(st);
+        return convertToDTO(saveShowTime);
+    }
+
+    public ShowTimeAdminDTO updateShowTimeAdminDTO(Long id,ShowTimeAdminDTO stDto){
+        ShowTime stEdit = getShowtimeId(id);
+        stEdit.setShowDate(stDto.getShowDate());
+        stEdit.setStartTime(stDto.getStartTime());
+        stEdit.setEndTime(stDto.getEndTime());
+
+        if (stDto.getMovieId() != null) {
+            Movie movie = movieRepository.findById(stDto.getMovieId())
+                    .orElseThrow(() -> new RuntimeException("movie not found"));
+            stEdit.setMovie(movie);
+        }
+        if (stDto.getRoomId() != null) {
+            Room room = roomService.getRoomById(stDto.getRoomId());
+            stEdit.setRoom(room);
+        }
+
+        ShowTime updateShowtime = showTimeRepository.save(stEdit);
+        return convertToDTO(updateShowtime);
     }
 }
