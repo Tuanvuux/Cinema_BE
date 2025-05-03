@@ -13,6 +13,9 @@ import java.util.List;
 @Repository
 public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
     List<ShowTime> findAll();
+    @Query("SELECT s FROM ShowTime s ORDER BY s.showDate DESC, s.startTime DESC")
+    List<ShowTime> findAllDesc();
+
 
     @Query("SELECT st FROM ShowTime st " +
             "JOIN FETCH st.movie m " + // JOIN FETCH với Movie

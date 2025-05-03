@@ -1,5 +1,6 @@
 package com.example.be.controller;
 
+import com.example.be.entity.Movie;
 import com.example.be.entity.User;
 import com.example.be.exception.CustomerException;
 import com.example.be.service.UserService;
@@ -29,20 +30,15 @@ public class AccountController {
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PatchMapping("/admin/{id}/toggle-delete")
-    public ResponseEntity<User> toggleDeleteStatus(@PathVariable("id") Long accountId, @RequestBody Map<String, Boolean> statusMap) {
-        Boolean isActive = statusMap.get("isActive");
-        if (isActive == null) {
-            return ResponseEntity.badRequest().build();
-        }
+    @PutMapping("/admin/{id}/toggle-delete")
+    public ResponseEntity<User> toggleDeleteUser(@PathVariable("id") Long accountId, @RequestBody User user) {
+        User user1 = userService.getUserById(accountId)
+                .orElseThrow(() -> new CustomerException("User not found with id: " + accountId));
 
-        User user = userService.getUserById(accountId)
-                .orElseThrow(() -> new CustomerException("Account not found with id: " + accountId));
+        user1.setIsActive(user.getIsActive());
+        User updatedUser = userService.saveUser(user1);
 
-        user.setIsActive(isActive);
-        User updatedMovie = userService.saveUser(user);
-
-        return ResponseEntity.ok(updatedMovie);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @PutMapping("/{id}/delete")

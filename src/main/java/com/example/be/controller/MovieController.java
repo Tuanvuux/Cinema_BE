@@ -83,19 +83,15 @@ public class MovieController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/admin/{id}/toggle-delete")
-    public ResponseEntity<Movie> toggleDeleteStatus(@PathVariable("id") Long movieId, @RequestBody Map<String, Boolean> statusMap) {
-        Boolean isDelete = statusMap.get("isDelete");
-        if (isDelete == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    @PutMapping("/admin/{id}/toggle-delete")
+    public ResponseEntity<Movie> toggleDeleteStatus(@PathVariable("id") Long movieId, @RequestBody Movie movieBody) {
         Movie movie = movieService.getMovieById(movieId)
                 .orElseThrow(() -> new CustomerException("Movie not found with id: " + movieId));
 
-        movie.setIsDelete(isDelete);
+        movie.setIsDelete(movieBody.getIsDelete());
         Movie updatedMovie = movieService.saveMovie(movie);
 
         return ResponseEntity.ok(updatedMovie);
     }
+
 }

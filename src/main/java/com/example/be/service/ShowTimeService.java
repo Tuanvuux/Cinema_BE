@@ -40,7 +40,7 @@ public class ShowTimeService {
         return showTimeRepository.findById(id).orElseThrow(() -> new RuntimeException("Showtime not found"));
     }
     public List<ShowTime> getAllShowtime(){
-        return showTimeRepository.findAll();
+        return showTimeRepository.findAllDesc();
     }
 
     public ShowTime updateShowtime(Long id, ShowTime showtimeDetails) {
