@@ -6,6 +6,7 @@ import com.example.be.dto.response.SeatDTO;
 import com.example.be.dto.response.SeatWithLockResponse;
 import com.example.be.entity.Room;
 import com.example.be.entity.Seat;
+import com.example.be.entity.SeatInfo;
 import com.example.be.service.RoomService;
 import com.example.be.service.SeatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,18 +51,23 @@ public class SeatController {
         return seatService.getSeatsByRoomId(roomId);
     }
 
-    @GetMapping("/all")
-    public List<Seat> getAllSeats() {
-        return seatService.getSeats();
-    }
+//    @GetMapping("/all")
+//    public List<Seat> getAllSeats() {
+//        return seatService.getSeats();
+//    }
 
     @PostMapping("/all")
     public Seat addSeat(@RequestBody Seat seat) {
         return seatService.addSeat(seat);
     }
-    @GetMapping
+    @GetMapping("/admin")
     public List<SeatDTO> getSeatsWithRoomInfo() {
         return seatService.getSeatsWithRoomInfo();
+    }
+
+    @GetMapping("/admin/seatinfo")
+    public List<SeatInfo> seatinfo() {
+        return seatService.getSeatInfo();
     }
 
     @GetMapping("/{id}")
@@ -69,17 +75,17 @@ public class SeatController {
         return seatService.getSeatById(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public void deleteSeat(@PathVariable Long id) {
         seatService.deleteSeat(id);
     }
 
-    @PostMapping
+    @PostMapping("/admin")
     public SeatDTO addSeat(@RequestBody SeatDTO seatDTO) {
         return seatService.addSeatDTO(seatDTO);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/{id}")
     public SeatDTO updateSeat(@PathVariable Long id, @RequestBody SeatDTO seatDTO) {
         return seatService.updateSeat(id, seatDTO);
     }

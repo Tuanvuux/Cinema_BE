@@ -37,7 +37,7 @@ public class MovieController {
         return movie.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/admin")
     public ResponseEntity<?> createMovie(@RequestBody Movie movie) {
         if (movie.getCategory() == null || movie.getCategory().getCategoryId() == null) {
             return ResponseEntity.badRequest().body("Category ID is required!");
@@ -57,7 +57,7 @@ public class MovieController {
         return ResponseEntity.status(201).body(savedMovie);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/{id}")
     public ResponseEntity<?> updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
         Optional<Movie> movieOpt = movieService.getMovieById(id);
         if (movieOpt.isEmpty()) {
@@ -77,25 +77,21 @@ public class MovieController {
         return ResponseEntity.status(201).body(updateMovie);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/toggle-delete")
-    public ResponseEntity<Movie> toggleDeleteStatus(@PathVariable("id") Long movieId, @RequestBody Map<String, Boolean> statusMap) {
-        Boolean isDelete = statusMap.get("isDelete");
-        if (isDelete == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    @PutMapping("/admin/{id}/toggle-delete")
+    public ResponseEntity<Movie> toggleDeleteStatus(@PathVariable("id") Long movieId, @RequestBody Movie movieBody) {
         Movie movie = movieService.getMovieById(movieId)
                 .orElseThrow(() -> new CustomerException("Movie not found with id: " + movieId));
 
-        movie.setIsDelete(isDelete);
+        movie.setIsDelete(movieBody.getIsDelete());
         Movie updatedMovie = movieService.saveMovie(movie);
 
         return ResponseEntity.ok(updatedMovie);
     }
+
 }

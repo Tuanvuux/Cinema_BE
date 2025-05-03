@@ -19,6 +19,8 @@ public class ShowTimeAdminDTO {
     private LocalDate showDate;
     private LocalTime startTime;
     private LocalTime endTime;
+    private Long movieId;
     private String movieName;
+    private Long roomId;
     private String roomName;
 }

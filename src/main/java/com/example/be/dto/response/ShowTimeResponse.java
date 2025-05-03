@@ -14,5 +14,4 @@ public class ShowTimeResponse {
     private String movieName;
     private String posterUrl;
     List<ShowTime> showTimeList;
-
 }

@@ -2,6 +2,7 @@ package com.example.be.service;
 
 import com.example.be.entity.Room;
 import com.example.be.repository.RoomRepository;
+import com.example.be.repository.ShowTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,8 @@ import java.util.List;
 public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
+    @Autowired
+    private ShowTimeRepository showTimeRepository;
 
     public Room addRoom(Room room) {
         return roomRepository.save(room);
@@ -38,4 +41,5 @@ public class RoomService {
         roomRepository.deleteById(id);
         return "Room deleted successfully!";
     }
+
 }

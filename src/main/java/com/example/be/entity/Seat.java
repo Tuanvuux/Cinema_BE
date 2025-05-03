@@ -31,6 +31,5 @@ public class Seat {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seat_info_id", referencedColumnName = "id")
     private SeatInfo seatInfo;
-
 }
 
