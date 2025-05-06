@@ -1,11 +1,13 @@
 package com.example.be.service;
 
 import com.example.be.dto.request.UserRequest;
+import com.example.be.dto.request.UserRequestADMIN;
 import com.example.be.dto.response.UserInforDTO;
 import com.example.be.entity.Movie;
 import com.example.be.entity.User;
 import com.example.be.enums.Role;
 import com.example.be.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,5 +58,45 @@ public class UserService {
     }
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    public User findAdminByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+    public User findUserById(Long id) {
+        return userRepository.findById(id).
+                orElseThrow(() -> new EntityNotFoundException("User not found"));
+    }
+    public void updateAdmin(Long id, UserRequestADMIN updateRequest) {
+        User adminToUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng"));
+
+        // Cập nhật thông tin cơ bản
+        adminToUpdate.setUsername(updateRequest.getUsername());
+        adminToUpdate.setEmail(updateRequest.getEmail());
+        adminToUpdate.setBirthday(updateRequest.getBirthday());
+        adminToUpdate.setGender(updateRequest.getGender());
+        adminToUpdate.setPhone(updateRequest.getPhone());
+        adminToUpdate.setFullName(updateRequest.getFullName());
+
+        // Xử lý cập nhật mật khẩu nếu có
+        if (updateRequest.getPassword() != null && !updateRequest.getPassword().isEmpty()) {
+            // Kiểm tra mật khẩu hiện tại
+            if (updateRequest.getCurrentPassword() == null || updateRequest.getCurrentPassword().isEmpty()) {
+                throw new IllegalArgumentException("Vui lòng nhập mật khẩu hiện tại");
+            }
+
+            // Kiểm tra mật khẩu hiện tại có chính xác không
+            if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), adminToUpdate.getPassword())) {
+                throw new IllegalArgumentException("Mật khẩu hiện tại không chính xác");
+            }
+
+            // Mã hóa và lưu mật khẩu mới
+            String hashedPassword = passwordEncoder.encode(updateRequest.getPassword());
+            adminToUpdate.setPassword(hashedPassword);
+        }
+
+        // Lưu thông tin cập nhật vào database
+        userRepository.save(adminToUpdate);
     }
 }

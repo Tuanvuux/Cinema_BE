@@ -28,9 +28,10 @@ public class LoginService {
             throw new CustomerException(ErrorConstants.ACCOUNT_NOT_FOUND);
         }
 
-        // Kiểm tra mật khẩu
         if (passwordEncoder.matches(password, user.getPassword())) {
+            // ✅ Truyền toàn bộ user vào generateToken
             String token = jwtUtil.generateToken(username);
+
             UserResponse userResponse = new UserResponse();
             userResponse.setUserId(user.getUserId());
             userResponse.setUsername(user.getUsername());
@@ -39,12 +40,12 @@ public class LoginService {
             userResponse.setToken(token);
             userResponse.setFullName(user.getFullName());
             userResponse.setGender(user.getGender());
-            return  userResponse;
-
+            return userResponse;
         }
 
         throw new CustomerException(ErrorConstants.INVALID_PASSWORD);
     }
+
 
     public boolean findAccount(String username) {
         return userRepository.existsByUsername(username);
