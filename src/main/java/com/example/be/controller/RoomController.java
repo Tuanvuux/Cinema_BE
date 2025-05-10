@@ -40,6 +40,10 @@ public class RoomController {
         return roomService.deleteRoom(id);
     }
 
+    @GetMapping("/{id}")
+    public Room getRoomByRoomId(@PathVariable Long id) {
+        return roomService.getRoomById(id);
+    }
     @GetMapping("/admin/countroom")
     public long sumRoom() {
         return roomService.countRoom();
