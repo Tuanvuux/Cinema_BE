@@ -1,4 +1,5 @@
 package com.example.be.controller;
+import com.example.be.dto.request.EmployeeRequest;
 import com.example.be.dto.request.UserRequest;
 import com.example.be.entity.User;
 import com.example.be.service.UserService;
@@ -20,6 +21,16 @@ public class AuthController {
         try {
             userService.registerUser(request);
             return ResponseEntity.status(HttpStatus.CREATED).body("Đăng ký tài khoản thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/create-employee")
+    public ResponseEntity<?> registerEmployee(@RequestBody EmployeeRequest request) {
+        try {
+            userService.registerEmployee(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Đăng ký tài khoản nhân viên thành công!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
