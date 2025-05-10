@@ -39,5 +39,10 @@ public class RoomController {
     public String deleteRoom(@PathVariable Long id) {
         return roomService.deleteRoom(id);
     }
+
+    @GetMapping("/admin/countroom")
+    public long sumRoom() {
+        return roomService.countRoom();
+    }
 }
 

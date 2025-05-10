@@ -178,6 +178,8 @@ public class SeatService {
             );
         }).collect(Collectors.toList());
     }
-
+    public long countSeat(){
+        return seatRepository.count();
+    }
 
 }

@@ -84,4 +84,9 @@ public class AccountController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/admin/countuser")
+    public long countUserNotAdmin(){
+        return userService.countUserNotAdmin();
+    }
+
 }

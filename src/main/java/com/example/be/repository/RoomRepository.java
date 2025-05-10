@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
     Room findById(long id);
+    long count();
 }

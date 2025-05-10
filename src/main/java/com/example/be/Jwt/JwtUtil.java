@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 @Component
 public class JwtUtil {
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Tạo khóa bí mật
-//    private final String SECRET = "thisIsASecretKeyThatShouldBeVerySecureAndLongEnough";
-//    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+//    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Tạo khóa bí mật
+    private final String SECRET = "thisIsASecretKeyThatShouldBeVerySecureAndLongEnough";
+    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
     // Sinh JWT
     public String generateToken(String username) {

@@ -99,4 +99,8 @@ public class UserService {
         // Lưu thông tin cập nhật vào database
         userRepository.save(adminToUpdate);
     }
+
+    public long countUserNotAdmin(){
+        return userRepository.countAllNonAdminUsers();
+    }
 }

@@ -24,7 +24,6 @@ public class MovieController {
 
     @Autowired
     private CategoryService categoryService; // Dịch vụ lấy thể loại
-    private MovieRepository movieRepository;
 
     @GetMapping
     public List<Movie> getAllMovies() {
@@ -92,6 +91,11 @@ public class MovieController {
         Movie updatedMovie = movieService.saveMovie(movie);
 
         return ResponseEntity.ok(updatedMovie);
+    }
+
+    @GetMapping("/admin/countmovie")
+    public long getTotalActiveMovies() {
+        return movieService.countMovies();
     }
 
 }

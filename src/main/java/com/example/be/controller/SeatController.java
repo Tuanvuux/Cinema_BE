@@ -94,4 +94,8 @@ public class SeatController {
         List<SeatWithLockResponse> seats = seatService.getSeatsWithLock(showtimeId);
         return ResponseEntity.ok(seats);
     }
+    @GetMapping("/admin/countseat")
+    public long countSeats() {
+        return seatService.countSeat();
+    }
 }
