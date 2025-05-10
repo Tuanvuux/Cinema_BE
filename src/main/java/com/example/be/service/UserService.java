@@ -1,5 +1,6 @@
 package com.example.be.service;
 
+import com.example.be.dto.request.EmployeeRequest;
 import com.example.be.dto.request.UserRequest;
 import com.example.be.dto.request.UserRequestADMIN;
 import com.example.be.dto.request.VerifyRequest;
@@ -31,6 +32,19 @@ public class UserService {
 
     private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
 
+    public void registerEmployee(EmployeeRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Tên nhân viên đã tồn tại!");
+        }
+
+        User user = new User();
+        user.setFullName(request.getFullName());
+        user.setUsername(request.getUsername());
+        user.setRole(Role.EMPLOYEE.toString());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+    }
+
     public UserInforDTO findByUsername(String username){
         UserInforDTO userInforDTO = new UserInforDTO();
         return userInforDTO;
@@ -53,6 +67,7 @@ public class UserService {
         return userRepository.findById(id).
                 orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
+
     public void updateAdmin(Long id, UserRequestADMIN updateRequest) {
         User adminToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng"));
