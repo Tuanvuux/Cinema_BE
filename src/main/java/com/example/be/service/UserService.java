@@ -2,6 +2,7 @@ package com.example.be.service;
 
 import com.example.be.dto.request.UserRequest;
 import com.example.be.dto.request.UserRequestADMIN;
+import com.example.be.dto.request.VerifyRequest;
 import com.example.be.dto.response.UserInforDTO;
 import com.example.be.entity.Movie;
 import com.example.be.entity.User;
@@ -13,7 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserService {
@@ -23,27 +26,10 @@ public class UserService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    EmailService emailService;
 
-    public void registerUser(UserRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Tên người dùng đã tồn tại!");
-        }
-
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email đã được sử dụng!");
-        }
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setRole(Role.USER.toString());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setBirthday(request.getBirthday());
-        user.setGender(request.getGender());
-        user.setAddress(request.getAddress());
-        user.setPhone(request.getPhone());
-        user.setFullName(request.getFullName());
-        userRepository.save(user);
-    }
+    private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
 
     public UserInforDTO findByUsername(String username){
         UserInforDTO userInforDTO = new UserInforDTO();
@@ -103,4 +89,45 @@ public class UserService {
     public long countUserNotAdmin(){
         return userRepository.countAllNonAdminUsers();
     }
+    public void sendVerificationCode(UserRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Tên người dùng đã tồn tại!");
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email đã được sử dụng!");
+        }
+
+        // Tạo mã xác nhận ngẫu nhiên 6 chữ số
+        String code = String.valueOf((int)((Math.random() * 900000) + 100000));
+        verificationCodes.put(request.getEmail(), code);
+
+        emailService.sendVerificationEmail(request.getEmail(), code);
+    }
+
+    public void verifyAndCreateUser(VerifyRequest request) {
+        String sentCode = verificationCodes.get(request.getEmail());
+
+        if (sentCode == null || !sentCode.equals(request.getCode())) {
+            throw new RuntimeException("Mã xác nhận không đúng hoặc đã hết hạn.");
+        }
+
+        // Tạo user sau khi xác nhận
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setRole(Role.USER.toString());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setBirthday(request.getBirthday());
+        user.setGender(request.getGender());
+        user.setAddress(request.getAddress());
+        user.setPhone(request.getPhone());
+        user.setFullName(request.getFullName());
+
+        userRepository.save(user);
+
+        // Xóa mã sau khi dùng
+        verificationCodes.remove(request.getEmail());
+    }
+
 }
