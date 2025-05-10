@@ -1,10 +1,13 @@
 package com.example.be.controller;
 
+import com.example.be.dto.request.UserRequestADMIN;
 import com.example.be.entity.Movie;
 import com.example.be.entity.User;
 import com.example.be.exception.CustomerException;
 import com.example.be.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +27,28 @@ public class AccountController {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/admin/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable("username") String username) {
+        User user = userService.findAdminByUsername(username);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/admin/{id}")
+    public ResponseEntity<?> updateUserAdmin(@PathVariable Long id, @RequestBody UserRequestADMIN user) {
+        try {
+            userService.updateAdmin(id, user);
+            return ResponseEntity.ok("Cập nhật thành công!");
+        } catch (IllegalArgumentException e) {
+            // Trả về lỗi mật khẩu không đúng với mã HTTP 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            // Trả về lỗi không tìm thấy người dùng với mã HTTP 404 Not Found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            // Trả về lỗi khác với mã HTTP 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Đã xảy ra lỗi khi cập nhật: " + e.getMessage());
+        }
     }
 
     @PutMapping("/admin/{id}/toggle-delete")
@@ -61,6 +82,11 @@ public class AccountController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/admin/countuser")
+    public long countUserNotAdmin(){
+        return userService.countUserNotAdmin();
     }
 
 }
