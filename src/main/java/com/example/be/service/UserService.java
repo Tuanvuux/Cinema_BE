@@ -53,6 +53,15 @@ public class UserService {
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }
+
+    public List<User> getListUsers(){
+        return userRepository.findAllByRole(Role.USER.toString());
+    }
+    public List<User> getListEmployee(){
+        return userRepository.findAllByRole(Role.EMPLOYEE.toString());
+    }
+
+
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
@@ -102,7 +111,11 @@ public class UserService {
     }
 
     public long countUserNotAdmin(){
-        return userRepository.countAllNonAdminUsers();
+        return userRepository.countAllNonAdminNonEmployeeUsers();
+    }
+
+    public long countEmployee(){
+        return userRepository.countAllNonAdminNonUsers();
     }
     public void sendVerificationCode(UserRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
