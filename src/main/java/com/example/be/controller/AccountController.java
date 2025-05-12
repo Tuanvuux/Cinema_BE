@@ -1,7 +1,6 @@
 package com.example.be.controller;
 
 import com.example.be.dto.request.UserRequestADMIN;
-import com.example.be.entity.Movie;
 import com.example.be.entity.User;
 import com.example.be.exception.CustomerException;
 import com.example.be.service.UserService;
@@ -87,6 +86,21 @@ public class AccountController {
     @GetMapping("/admin/countuser")
     public long countUserNotAdmin(){
         return userService.countUserNotAdmin();
+    }
+
+    @GetMapping("/admin/countemployee")
+    public long countEmployee(){
+        return userService.countEmployee();
+    }
+
+    @GetMapping("/admin/getuser")
+    public List<User> getListUser(){
+        return userService.getListUsers();
+    }
+
+    @GetMapping("/admin/getemployee")
+    public List<User> getListEmployee(){
+        return userService.getListEmployee();
     }
 
 }
