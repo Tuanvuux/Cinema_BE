@@ -26,7 +26,7 @@ public class Seat {
     private String rowLabel; // Thay "row" bằng "rowLabel"
     private int columnNumber; // Cột ghế (1, 2, 3...)
     @Enumerated(EnumType.STRING)
-    private SeatStatus status; // Trạng thái ghế (AVAILABLE, SELECTED, BOOKED)
+    private SeatStatus status;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seat_info_id", referencedColumnName = "id")
