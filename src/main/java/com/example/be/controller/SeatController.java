@@ -98,4 +98,5 @@ public class SeatController {
     public long countSeats() {
         return seatService.countSeat();
     }
+
 }

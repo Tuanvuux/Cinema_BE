@@ -81,6 +81,7 @@ public class ShowTimeController {
     public String deleteShowtime(@PathVariable Long id) {
         return showTimeService.deletedShowtime(id);
     }
+
     @GetMapping("")
     public ResponseEntity<List<ShowTimeResponse>> getAllShowTime() {
         return ResponseEntity.ok(showTimeService.findAllShowTime());}
@@ -98,5 +99,6 @@ public class ShowTimeController {
     ) {
         return showTimeService.getAvailableRooms(showDate, startTime, endTime);
     }
+
 
 }

@@ -27,9 +27,9 @@ public class SeatSelection {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "seat_status", nullable = false)
-    private String seatStatus;
+    private SeatStatus seatStatus;
 
     @Column(name = "selection_time", nullable = false)
     private LocalDateTime selectionTime;
