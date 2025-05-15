@@ -1,11 +1,11 @@
 package com.example.be.service;
 
-import com.example.be.entity.SeatSelection;
-import com.example.be.enums.SeatStatus;
+import com.example.be.dto.response.LockedSeatDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -13,34 +13,77 @@ import java.util.concurrent.TimeUnit;
 public class SeatLockService {
 
     private final StringRedisTemplate redisTemplate;
-    private final SeatSelectionService seatSelectionService;  // Inject service xử lý lưu ghế
+    private final SeatSelectionService seatSelectionService;
 
-    // Khóa ghế
+    private String buildKey(Long showtimeId, Long seatId) {
+        return "seat:" + showtimeId + ":" + seatId;
+    }
+
+    private String buildSetKey(Long showtimeId) {
+        return "seat-locked-keys:" + showtimeId;
+    }
+
+    // ✅ Giữ ghế (kèm lưu vào Set)
     public boolean lockSeat(Long showtimeId, Long seatId, Long userId) {
-        String key = "seat-lock:" + showtimeId + ":" + seatId;
+        String key = buildKey(showtimeId, seatId);
+        String setKey = buildSetKey(showtimeId);
 
-        // Kiểm tra khóa ghế với Redis
+        // Kiểm tra xem ghế đã bị khóa chưa
         Boolean success = redisTemplate.opsForValue().setIfAbsent(key, userId.toString(), 5, TimeUnit.MINUTES);
         if (Boolean.TRUE.equals(success)) {
-            // Lưu thông tin ghế vào bảng seat_selection khi khóa thành công
+            // ✅ Thêm key vào Redis Set để theo dõi ghế bị khóa
+            redisTemplate.opsForSet().add(setKey, key);
+            redisTemplate.expire(setKey, 10, TimeUnit.MINUTES); // Set sẽ hết hạn sau 10 phút
+
+            // ✅ Gọi service lưu DB
             seatSelectionService.lockSeat(showtimeId, seatId, userId);
             return true;
         }
         return false;
     }
 
-    // Mở khóa ghế
+    // ✅ Mở ghế (xoá key Redis và xoá khỏi Redis Set)
     public void unlockSeat(Long showtimeId, Long seatId) {
-        String key = "seat-lock:" + showtimeId + ":" + seatId;
-        redisTemplate.delete(key);  // Xóa khóa trong Redis
+        String key = buildKey(showtimeId, seatId);
+        String setKey = buildSetKey(showtimeId);
 
-        // Xóa ghế khỏi bảng seat_selection
+        redisTemplate.delete(key);
+        redisTemplate.opsForSet().remove(setKey, key);
+
         seatSelectionService.unlockSeat(showtimeId, seatId);
     }
 
-    // Kiểm tra trạng thái ghế
+    // ✅ Kiểm tra ghế có bị giữ không
     public boolean isSeatLocked(Long showtimeId, Long seatId) {
-        String key = "seat-lock:" + showtimeId + ":" + seatId;
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+        return Boolean.TRUE.equals(redisTemplate.hasKey(buildKey(showtimeId, seatId)));
+    }
+
+    // ✅ Lấy danh sách các seatId đang bị giữ cho 1 suất chiếu
+    public List<LockedSeatDTO> getLockedSeats(Long showtimeId) {
+        String setKey = buildSetKey(showtimeId);
+        Set<String> lockedKeys = redisTemplate.opsForSet().members(setKey);
+
+        if (lockedKeys == null || lockedKeys.isEmpty()) return Collections.emptyList();
+
+        List<LockedSeatDTO> result = new ArrayList<>();
+
+        for (String key : lockedKeys) {
+            if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+                String[] parts = key.split(":"); // seat:showtimeId:seatId
+                if (parts.length == 3) {
+                    Long seatId = Long.parseLong(parts[2]);
+                    String userIdStr = redisTemplate.opsForValue().get(key);
+                    if (userIdStr != null) {
+                        Long userId = Long.parseLong(userIdStr);
+                        result.add(new LockedSeatDTO(seatId, userId));
+                    }
+                }
+            } else {
+                // Nếu key hết hạn nhưng vẫn còn trong Set → xóa khỏi set
+                redisTemplate.opsForSet().remove(setKey, key);
+            }
+        }
+
+        return result;
     }
 }
