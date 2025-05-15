@@ -35,4 +35,7 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
                                   @Param("startTime") LocalTime startTime,
                                   @Param("endTime") LocalTime endTime);
 
+    List<ShowTime> findByShowDateBetween(LocalDate startDate, LocalDate endDate);
+
+
 }
