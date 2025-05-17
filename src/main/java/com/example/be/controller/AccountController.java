@@ -61,7 +61,7 @@ public class AccountController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    @PutMapping("/{id}/delete")
+    @PutMapping("/admin/{id}/delete")
     public ResponseEntity<Void> deactivateUser(@PathVariable Long id) {
         Optional<User> user = userService.getUserById(id);
         if (user.isPresent()) {
@@ -72,7 +72,7 @@ public class AccountController {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/{id}/restore")
+    @PutMapping("/admin/{id}/restore")
     public ResponseEntity<Void> restoreUser(@PathVariable Long id) {
         Optional<User> user = userService.getUserById(id);
         if (user.isPresent()) {
