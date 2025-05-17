@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -156,6 +157,34 @@ public class UserService {
 
         // Xóa mã sau khi dùng
         verificationCodes.remove(request.getEmail());
+    }
+
+    public UserInforDTO getUserInfoByUserId(Long userId){
+        Optional<User> user = getUserById(userId);
+        UserInforDTO userInforDTO = new UserInforDTO();
+        userInforDTO.setUsername(user.get().getUsername());
+        userInforDTO.setFullName(user.get().getFullName());
+        userInforDTO.setEmail(user.get().getEmail());
+        userInforDTO.setBirthday(user.get().getBirthday());
+        userInforDTO.setAddress(user.get().getAddress());
+        userInforDTO.setPhone(user.get().getPhone());
+        userInforDTO.setGender(user.get().getGender());
+        userInforDTO.setCreatedAt(user.get().getCreatedAt());
+        return userInforDTO;
+    }
+    public boolean updateUserInfo(UserInforDTO dto) {
+        Optional<User> optionalUser = userRepository.findById(dto.getUserId());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setFullName(dto.getFullName());
+            user.setBirthday(dto.getBirthday());
+            user.setGender(dto.getGender());
+            user.setAddress(dto.getAddress());
+            user.setPhone(dto.getPhone());
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 
 }

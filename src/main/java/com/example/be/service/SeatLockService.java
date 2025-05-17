@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class SeatLockService {
 
     private final StringRedisTemplate redisTemplate;
-    private final SeatSelectionService seatSelectionService;
+    private final BookingService bookingService;
 
     private String buildKey(Long showtimeId, Long seatId) {
         return "seat:" + showtimeId + ":" + seatId;
@@ -36,7 +36,7 @@ public class SeatLockService {
             redisTemplate.expire(setKey, 10, TimeUnit.MINUTES); // Set sẽ hết hạn sau 10 phút
 
             // ✅ Gọi service lưu DB
-            seatSelectionService.lockSeat(showtimeId, seatId, userId);
+            bookingService.lockSeat(showtimeId, seatId, userId);
             return true;
         }
         return false;
@@ -50,7 +50,7 @@ public class SeatLockService {
         redisTemplate.delete(key);
         redisTemplate.opsForSet().remove(setKey, key);
 
-        seatSelectionService.unlockSeat(showtimeId, seatId);
+        bookingService.unlockSeat(showtimeId, seatId);
     }
 
     // ✅ Kiểm tra ghế có bị giữ không
