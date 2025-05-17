@@ -5,8 +5,8 @@ import com.example.be.dto.request.UnlockSeatRequest;
 import com.example.be.dto.response.LockedSeatDTO;
 import com.example.be.dto.response.SeatStatusResponse;
 import com.example.be.enums.SeatStatus;
+import com.example.be.service.BookingService;
 import com.example.be.service.SeatLockService;
-import com.example.be.service.SeatSelectionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -20,7 +20,7 @@ import java.util.List;
 public class SeatWebSocketController {
 
     private final SeatLockService seatLockService;
-    private final SeatSelectionService seatSelectionService;
+    private final BookingService bookingService;
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/seat/select")
@@ -48,7 +48,7 @@ public class SeatWebSocketController {
         Long seatId = request.getSeatId();
         Long userId = request.getUserId();
 
-        seatSelectionService.deleteSeatSelection(userId, showtimeId, seatId, request.getSeatStatus());
+        bookingService.deleteSeatSelection(userId, showtimeId, seatId, request.getSeatStatus());
         seatLockService.unlockSeat(showtimeId, seatId);
 
         messagingTemplate.convertAndSend("/topic/seats/" + showtimeId,
@@ -57,14 +57,14 @@ public class SeatWebSocketController {
 
     @PostMapping("/seats/unlock")
     public ResponseEntity<String> unlockSeat(@RequestBody UnlockSeatRequest request) {
-        seatSelectionService.deleteSeatSelection(request.getUserId(), request.getShowtimeId(), request.getSeatId(), request.getSeatStatus());
+        bookingService.deleteSeatSelection(request.getUserId(), request.getShowtimeId(), request.getSeatId(), request.getSeatStatus());
         seatLockService.unlockSeat(request.getShowtimeId(), request.getSeatId());
         return ResponseEntity.ok("Đã mở khóa ghế thành công!");
     }
 
     @GetMapping("/booked/{showtimeId}")
     public List<Long> getBookedSeats(@PathVariable Long showtimeId) {
-        return seatSelectionService.getBookedSeatIds(showtimeId);
+        return bookingService.getBookedSeatIds(showtimeId);
     }
     @GetMapping("/locked/{showtimeId}")
     public ResponseEntity<List<LockedSeatDTO>> getLockedSeats(@PathVariable Long showtimeId) {

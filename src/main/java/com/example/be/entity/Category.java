@@ -20,7 +20,6 @@ public class Category {
     private Long categoryId;
 
     private String name;
-    private String imageUrl;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
