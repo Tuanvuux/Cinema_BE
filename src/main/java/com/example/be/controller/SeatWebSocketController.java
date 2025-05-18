@@ -1,5 +1,6 @@
 package com.example.be.controller;
 
+import com.example.be.dto.request.BookingRequestDTO;
 import com.example.be.dto.request.SeatSelectionRequestDTO;
 import com.example.be.dto.request.UnlockSeatRequest;
 import com.example.be.dto.response.LockedSeatDTO;
@@ -71,4 +72,10 @@ public class SeatWebSocketController {
         List<LockedSeatDTO> lockedSeats = seatLockService.getLockedSeats(showtimeId);
         return ResponseEntity.ok(lockedSeats);
     }
+    @PostMapping("/booking")
+    public ResponseEntity<String> book(@RequestBody BookingRequestDTO request) {
+        bookingService.bookSeats(request.getUserId(), request.getShowtimeId(), request.getSeatIds());
+        return ResponseEntity.ok("Đặt vé thành công");
+    }
+
 }
