@@ -29,7 +29,7 @@ public class SeatLockService {
         String setKey = buildSetKey(showtimeId);
 
         // Kiểm tra xem ghế đã bị khóa chưa
-        Boolean success = redisTemplate.opsForValue().setIfAbsent(key, userId.toString(), 5, TimeUnit.MINUTES);
+        Boolean success = redisTemplate.opsForValue().setIfAbsent(key, userId.toString(), 1, TimeUnit.MINUTES);
         if (Boolean.TRUE.equals(success)) {
             // ✅ Thêm key vào Redis Set để theo dõi ghế bị khóa
             redisTemplate.opsForSet().add(setKey, key);
