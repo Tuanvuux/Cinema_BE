@@ -16,7 +16,6 @@ public class SeatLockService {
 
     private final StringRedisTemplate redisTemplate;
     private final BookingService bookingService;
-    private final LockSeatByShowTimeRepository lsbstRepo;
 
     private String buildKey(Long showtimeId, Long seatId) {
         return "seat:" + showtimeId + ":" + seatId;
@@ -90,7 +89,4 @@ public class SeatLockService {
         return result;
     }
 
-    public List<LockSeatByShowTime> getLockSeatByShowTimes(){
-        return lsbstRepo.findAll();
-    }
 }

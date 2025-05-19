@@ -16,15 +16,16 @@ public class LockSeatByShowTime {
     private Long lockSeatId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id", nullable = false)
     private ShowTime showtime;
-
-    /* Thời gian hết hạn giữ ghế (nếu chỉ hold tạm) – optional */
-    private LocalDateTime expiresAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
