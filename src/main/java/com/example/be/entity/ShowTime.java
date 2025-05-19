@@ -41,23 +41,4 @@ public class ShowTime {
     @JoinColumn(name = "roomId", nullable = false)
     private Room room;
 
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-//    private LocalDate showDate;
-//
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
-//    private LocalTime startTime;
-//
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
-//    private LocalTime endTime;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "movie_id", referencedColumnName = "movieId")
-//    private Movie movie;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "room_id", referencedColumnName = "id")
-//    private Room room;
-//
-//    @Column(updatable = false)
-//    private LocalDateTime createdAt = LocalDateTime.now();
 }

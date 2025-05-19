@@ -1,6 +1,8 @@
 package com.example.be.service;
 
 import com.example.be.dto.response.LockedSeatDTO;
+import com.example.be.entity.LockSeatByShowTime;
+import com.example.be.repository.LockSeatByShowTimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ public class SeatLockService {
 
     private final StringRedisTemplate redisTemplate;
     private final BookingService bookingService;
+    private final LockSeatByShowTimeRepository lsbstRepo;
 
     private String buildKey(Long showtimeId, Long seatId) {
         return "seat:" + showtimeId + ":" + seatId;
@@ -85,5 +88,9 @@ public class SeatLockService {
         }
 
         return result;
+    }
+
+    public List<LockSeatByShowTime> getLockSeatByShowTimes(){
+        return lsbstRepo.findAll();
     }
 }
