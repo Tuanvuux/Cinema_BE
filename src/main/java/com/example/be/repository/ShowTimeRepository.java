@@ -37,5 +37,15 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
 
     List<ShowTime> findByShowDateBetween(LocalDate startDate, LocalDate endDate);
 
+    @Query("""
+       SELECT st
+       FROM ShowTime st 
+       JOIN FETCH st.room r
+       WHERE r.id = :roomId
+         AND st.showDate >= :today 
+       ORDER BY st.showDate, st.startTime
+       """)
+    List<ShowTime> findByRoomFromToday(@Param("roomId") Long roomId,
+                                       @Param("today")  LocalDate today);
 
 }
