@@ -21,12 +21,12 @@ public class Booking {
     private Long bookingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId")
-    private ShowTime showtime; // Liên kết với lịch chiếu
+    @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId" , insertable = false, updatable = false)
+    private ShowTime showtime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User user; // Liên kết với người dùng đã đặt vé
+    @JoinColumn(name = "user_id", referencedColumnName = "userId" , insertable = false, updatable = false)
+    private User user;
 
 //    @ManyToMany(fetch = FetchType.LAZY)
 //    @JoinTable(
@@ -38,13 +38,13 @@ public class Booking {
 
     private LocalDateTime bookingTime; // Thời gian đặt vé
 
-    @Column(name = "showtime_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "showtime_id", nullable = false)
     private Long showTimeId;
 
     @Column(name = "seat_id", nullable = false)
     private Long seatId;
 
-    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
     @Enumerated(EnumType.STRING)
     @Column(name = "seat_status", nullable = false)

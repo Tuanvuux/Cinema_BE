@@ -3,7 +3,10 @@ package com.example.be.controller;
 import com.example.be.dto.MovieDetailReportDTO;
 import com.example.be.dto.MovieRevenueReportDTO;
 import com.example.be.dto.MovieViewsReportDTO;
+import com.example.be.dto.request.PaymentHistoryRequestDTO;
+import com.example.be.dto.response.PaymentDTOResponse;
 import com.example.be.dto.response.PaymentResponseDTO;
+import com.example.be.entity.PaymentHistory;
 import com.example.be.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -68,5 +71,11 @@ public class PaymentController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         return ResponseEntity.ok(paymentService.getMovieDetailReport(startDate, endDate));
+    }
+    @PostMapping("/addPayment")
+    public ResponseEntity<PaymentDTOResponse> createPayment(@RequestBody PaymentHistoryRequestDTO dto) {
+        PaymentHistory newPaymentHistory = paymentService.createPayment(dto);
+        PaymentDTOResponse paymentDTOResponse = paymentService.convertPaymentDTO(newPaymentHistory);
+        return ResponseEntity.ok(paymentDTOResponse);
     }
 }
