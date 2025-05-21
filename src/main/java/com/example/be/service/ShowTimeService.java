@@ -191,4 +191,8 @@ public class ShowTimeService {
         ShowTime updateShowtime = showTimeRepository.save(stEdit);
         return convertToDTO(updateShowtime);
     }
+
+    public List<ShowTime> getShowtimesByRoom(Long roomId){
+        return showTimeRepository.findByRoomFromToday(roomId, LocalDate.now());
+    }
 }

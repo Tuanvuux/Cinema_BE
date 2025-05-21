@@ -1,6 +1,8 @@
 package com.example.be.service;
 
 import com.example.be.dto.response.LockedSeatDTO;
+import com.example.be.entity.LockSeatByShowTime;
+import com.example.be.repository.LockSeatByShowTimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -103,5 +105,6 @@ public class SeatLockService {
 
         return extendedSeats;
     }
+
 
 }
