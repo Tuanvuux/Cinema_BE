@@ -1,6 +1,7 @@
 package com.example.be.controller;
 
 import com.example.be.dto.request.BookingRequestDTO;
+import com.example.be.dto.request.ExtendLockRequest;
 import com.example.be.dto.request.SeatSelectionRequestDTO;
 import com.example.be.dto.request.UnlockSeatRequest;
 import com.example.be.dto.response.LockedSeatDTO;
@@ -56,12 +57,12 @@ public class SeatWebSocketController {
                 new SeatStatusResponse("Ghế đã được hủy giữ", seatId, SeatStatus.AVAILABLE, userId));
     }
 
-    @PostMapping("/seats/unlock")
-    public ResponseEntity<String> unlockSeat(@RequestBody UnlockSeatRequest request) {
-        bookingService.deleteSeatSelection(request.getUserId(), request.getShowtimeId(), request.getSeatId(), request.getSeatStatus());
-        seatLockService.unlockSeat(request.getShowtimeId(), request.getSeatId());
-        return ResponseEntity.ok("Đã mở khóa ghế thành công!");
-    }
+//    @PostMapping("/seats/unlock")
+//    public ResponseEntity<String> unlockSeat(@RequestBody UnlockSeatRequest request) {
+//        bookingService.deleteSeatSelection(request.getUserId(), request.getShowtimeId(), request.getSeatId(), request.getSeatStatus());
+//        seatLockService.unlockSeat(request.getShowtimeId(), request.getSeatId());
+//        return ResponseEntity.ok("Đã mở khóa ghế thành công!");
+//    }
 
     @GetMapping("/booked/{showtimeId}")
     public List<Long> getBookedSeats(@PathVariable Long showtimeId) {
@@ -77,5 +78,16 @@ public class SeatWebSocketController {
         bookingService.bookSeats(request.getUserId(), request.getShowtimeId(), request.getSeatIds());
         return ResponseEntity.ok("Đặt vé thành công");
     }
+    @PostMapping("/seats/extend-lock")
+    public ResponseEntity<?> extendLock(@RequestBody ExtendLockRequest request) {
+        List<Long> extended = seatLockService.extendSeatLocks(
+                request.getShowtimeId(),
+                request.getUserId(),
+                request.getSeatIds()
+        );
+
+        return ResponseEntity.ok().body("Đã gia hạn " + extended.size() + " ghế: " + extended);
+    }
+
 
 }

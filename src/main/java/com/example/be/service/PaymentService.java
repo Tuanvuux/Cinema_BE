@@ -3,6 +3,8 @@ package com.example.be.service;
 import com.example.be.dto.MovieDetailReportDTO;
 import com.example.be.dto.MovieRevenueReportDTO;
 import com.example.be.dto.MovieViewsReportDTO;
+import com.example.be.dto.request.PaymentHistoryRequestDTO;
+import com.example.be.dto.response.PaymentDTOResponse;
 import com.example.be.dto.response.PaymentDetailDTO;
 import com.example.be.dto.response.PaymentResponseDTO;
 import com.example.be.entity.*;
@@ -29,6 +31,8 @@ public class PaymentService {
     private ShowTimeRepository showTimeRepository;
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private RoomRepository roomRepository;
 
@@ -269,6 +273,7 @@ public class PaymentService {
                 .sorted(Comparator.comparing(MovieDetailReportDTO::getRevenue).reversed())
                 .collect(Collectors.toList());
     }
+
     // Helper methods
     private List<PaymentHistory> getPaymentsInDateRange(LocalDate startDate, LocalDate endDate) {
         // Implementation depends on your repository methods
@@ -329,5 +334,29 @@ public class PaymentService {
         public int getTotalCapacity() {
             return totalCapacity;
         }
+    }
+    public PaymentHistory createPayment(PaymentHistoryRequestDTO dto) {
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
+
+        ShowTime showTime = showTimeRepository.findById(dto.getShowtimeId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy suất chiếu"));
+
+        PaymentHistory payment = new PaymentHistory();
+        payment.setDateTransaction(dto.getDateTransaction());
+        payment.setSumTicket(dto.getSumTicket());
+        payment.setSumPrice(dto.getSumPrice());
+        payment.setMethodPayment(dto.getMethodPayment());
+        payment.setStatus(dto.getStatus());
+        payment.setUser(user);
+        payment.setShowTime(showTime);
+
+        return paymentHistoryRepository.save(payment);
+    }
+    public PaymentDTOResponse convertPaymentDTO(PaymentHistory paymentHistory){
+        PaymentDTOResponse paymentDTOResponse = new PaymentDTOResponse();
+        paymentDTOResponse.setPaymentId(paymentHistory.getPaymentId());
+        paymentDTOResponse.setSumPrice(paymentHistory.getSumPrice());
+        return paymentDTOResponse;
     }
 }

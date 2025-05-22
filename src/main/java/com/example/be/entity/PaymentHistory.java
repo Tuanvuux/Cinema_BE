@@ -27,6 +27,8 @@ public class PaymentHistory {
 
     private String MethodPayment;
 
+    private String Status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private User user;
@@ -38,6 +40,10 @@ public class PaymentHistory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId")
     private ShowTime showtime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId")
+    private ShowTime showTime;
 
     @OneToMany(mappedBy = "paymentHistory", cascade = CascadeType.ALL)
     private List<PaymentDetail> paymentDetails;

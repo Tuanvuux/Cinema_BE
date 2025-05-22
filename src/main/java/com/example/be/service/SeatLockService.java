@@ -88,5 +88,23 @@ public class SeatLockService {
 
         return result;
     }
+    public List<Long> extendSeatLocks(Long showtimeId, Long userId, List<Long> seatIds) {
+        List<Long> extendedSeats = new ArrayList<>();
+
+        for (Long seatId : seatIds) {
+            String key = buildKey(showtimeId, seatId);
+            String currentUserId = redisTemplate.opsForValue().get(key);
+
+            if (currentUserId != null && currentUserId.equals(userId.toString())) {
+                Boolean result = redisTemplate.expire(key, 5, TimeUnit.MINUTES);
+                if (Boolean.TRUE.equals(result)) {
+                    extendedSeats.add(seatId);
+                }
+            }
+        }
+
+        return extendedSeats;
+    }
+
 
 }
