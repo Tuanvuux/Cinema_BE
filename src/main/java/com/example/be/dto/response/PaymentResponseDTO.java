@@ -25,8 +25,6 @@ public class PaymentResponseDTO {
     private Long userId;
     private String username;
 
-    // Booking information
-    private Long bookingId;
     private Long roomId;
     private String roomName;
 
