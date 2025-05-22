@@ -5,15 +5,9 @@ import com.example.be.dto.MovieRevenueReportDTO;
 import com.example.be.dto.MovieViewsReportDTO;
 import com.example.be.dto.response.PaymentDetailDTO;
 import com.example.be.dto.response.PaymentResponseDTO;
-import com.example.be.entity.Movie;
-import com.example.be.entity.PaymentHistory;
-import com.example.be.entity.PaymentDetail;
-import com.example.be.entity.ShowTime;
+import com.example.be.entity.*;
 import com.example.be.exception.ResourceNotFoundException;
-import com.example.be.repository.MovieRepository;
-import com.example.be.repository.PaymentDetailRepository;
-import com.example.be.repository.PaymentHistoryRepository;
-import com.example.be.repository.ShowTimeRepository;
+import com.example.be.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +29,8 @@ public class PaymentService {
     private ShowTimeRepository showTimeRepository;
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private RoomRepository roomRepository;
 
     public List<PaymentResponseDTO> getAllPayments() {
         List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
@@ -69,16 +65,10 @@ public class PaymentService {
         }
 
         // Set booking information if available
-        if (paymentHistory.getBooking() != null) {
-            dto.setBookingId(paymentHistory.getBooking().getBookingId());
-
-            // Set movie information if available from booking
-            if (paymentHistory.getBooking().getShowtime()!= null &&
-                    paymentHistory.getBooking().getShowtime().getMovie() != null) {
-                dto.setMovieName(paymentHistory.getBooking().getShowtime().getMovie().getName());
-                dto.setScheduleId(paymentHistory.getBooking().getShowtime().getShowtimeId());
-                dto.setRoomName(paymentHistory.getBooking().getShowtime().getRoom().getName());
-            }
+        if (paymentHistory.getShowtime() != null) {
+            dto.setScheduleId(paymentHistory.getShowtime().getShowtimeId());
+            dto.setMovieName(paymentHistory.getShowtime().getMovie().getName());
+            dto.setRoomName(paymentHistory.getShowtime().getRoom().getName());
         }
 
         // Set payment details information
@@ -123,7 +113,7 @@ public class PaymentService {
 
         // Calculate revenue for each movie
         for (PaymentHistory payment : payments) {
-            ShowTime showTime = payment.getBooking().getShowtime();
+            ShowTime showTime = payment.getShowtime();
             Movie movie = showTime.getMovie();
 
             BigDecimal paymentAmount = payment.getSumPrice();
@@ -145,7 +135,7 @@ public class PaymentService {
 
         // Calculate ticket count for each movie
         for (PaymentHistory payment : payments) {
-            ShowTime showTime = payment.getBooking().getShowtime();
+            ShowTime showTime = payment.getShowtime();
             Movie movie = showTime.getMovie();
 
             Integer ticketCount = payment.getSumTicket();
@@ -160,6 +150,65 @@ public class PaymentService {
                         entry.getValue()))
                 .collect(Collectors.toList());
     }
+
+//    public List<MovieDetailReportDTO> getMovieDetailReport(LocalDate startDate, LocalDate endDate) {
+//        List<PaymentHistory> payments = getPaymentsInDateRange(startDate, endDate);
+//        List<ShowTime> showTimes = getShowTimesInDateRange(startDate, endDate);
+//
+//        Map<Movie, MovieDetailStats> movieStatsMap = new HashMap<>();
+//
+//        // Trước tiên xử lý tất cả các phim có payment trong khoảng thời gian
+//        for (PaymentHistory payment : payments) {
+//            if (payment.getShowtime() != null && payment.getShowtime().getMovie() != null) {
+//                Movie movie = payment.getShowtime().getMovie();
+//
+//                // Đảm bảo phim tồn tại trong map
+//                movieStatsMap.putIfAbsent(movie, new MovieDetailStats());
+//
+//                // Cập nhật doanh thu và số vé
+//                MovieDetailStats stats = movieStatsMap.get(movie);
+//                stats.addRevenue(payment.getSumPrice());
+//                stats.addTicketCount(payment.getSumTicket());
+//            }
+//        }
+//
+//        // Sau đó xử lý showtime cho những phim đã có trong map hoặc chưa có payment
+//        for (ShowTime showTime : showTimes) {
+//            Movie movie = showTime.getMovie();
+//
+//            // Đảm bảo phim tồn tại trong map
+//            movieStatsMap.putIfAbsent(movie, new MovieDetailStats());
+//
+//            // Cập nhật số suất chiếu
+//            movieStatsMap.get(movie).incrementShowtimeCount();
+//
+//            // Cập nhật sức chứa phòng
+//            movieStatsMap.get(movie).addRoomCapacity(calculateRoomCapacity(showTime.getRoom().getId()));
+//        }
+//
+//        // Chuyển đổi sang DTO và trả về kết quả
+//        return movieStatsMap.entrySet().stream()
+//                .map(entry -> {
+//                    MovieDetailStats stats = entry.getValue();
+//                    Movie movie = entry.getKey();
+//
+//                    // Tính tỷ lệ lấp đầy
+//                    int occupancyRate = 0;
+//                    if (stats.getTotalCapacity() > 0) {
+//                        occupancyRate = (int) ((double) stats.getTicketCount() / stats.getTotalCapacity() * 100);
+//                    }
+//
+//                    return new MovieDetailReportDTO(
+//                            movie.getMovieId(),
+//                            movie.getName(),
+//                            stats.getRevenue(),
+//                            stats.getTicketCount(),
+//                            stats.getShowtimeCount(),
+//                            occupancyRate);
+//                })
+//                .sorted(Comparator.comparing(MovieDetailReportDTO::getRevenue).reversed())
+//                .collect(Collectors.toList());
+//    }
 
     public List<MovieDetailReportDTO> getMovieDetailReport(LocalDate startDate, LocalDate endDate) {
         List<PaymentHistory> payments = getPaymentsInDateRange(startDate, endDate);
@@ -183,7 +232,7 @@ public class PaymentService {
 
         // Process payments
         for (PaymentHistory payment : payments) {
-            ShowTime showTime = payment.getBooking().getShowtime();
+            ShowTime showTime = payment.getShowtime();
             Movie movie = showTime.getMovie();
 
             // Ensure the movie exists in our map
@@ -220,7 +269,6 @@ public class PaymentService {
                 .sorted(Comparator.comparing(MovieDetailReportDTO::getRevenue).reversed())
                 .collect(Collectors.toList());
     }
-
     // Helper methods
     private List<PaymentHistory> getPaymentsInDateRange(LocalDate startDate, LocalDate endDate) {
         // Implementation depends on your repository methods
@@ -234,9 +282,9 @@ public class PaymentService {
     }
 
     private int calculateRoomCapacity(Long roomId) {
-        // You would typically get this from your database
-        // This is a placeholder implementation
-        return 100; // Assuming average room capacity of 100 seats
+        return roomRepository.findById(roomId)
+                .map(Room::getSeatCount)
+                .orElse(0); // hoặc throw nếu muốn kiểm soát chặt chẽ
     }
 
     // Helper class for accumulating stats
