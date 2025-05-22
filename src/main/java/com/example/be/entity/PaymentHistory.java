@@ -37,9 +37,9 @@ public class PaymentHistory {
 //    @JoinColumn(name = "booking_id", referencedColumnName = "bookingId")
 //    private Booking booking;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId")
-    private ShowTime showtime;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId")
+//    private ShowTime showtime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId")

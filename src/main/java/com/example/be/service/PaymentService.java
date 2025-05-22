@@ -69,10 +69,10 @@ public class PaymentService {
         }
 
         // Set booking information if available
-        if (paymentHistory.getShowtime() != null) {
-            dto.setScheduleId(paymentHistory.getShowtime().getShowtimeId());
-            dto.setMovieName(paymentHistory.getShowtime().getMovie().getName());
-            dto.setRoomName(paymentHistory.getShowtime().getRoom().getName());
+        if (paymentHistory.getShowTime() != null) {
+            dto.setScheduleId(paymentHistory.getShowTime().getShowtimeId());
+            dto.setMovieName(paymentHistory.getShowTime().getMovie().getName());
+            dto.setRoomName(paymentHistory.getShowTime().getRoom().getName());
         }
 
         // Set payment details information
@@ -117,7 +117,7 @@ public class PaymentService {
 
         // Calculate revenue for each movie
         for (PaymentHistory payment : payments) {
-            ShowTime showTime = payment.getShowtime();
+            ShowTime showTime = payment.getShowTime();
             Movie movie = showTime.getMovie();
 
             BigDecimal paymentAmount = payment.getSumPrice();
@@ -139,7 +139,7 @@ public class PaymentService {
 
         // Calculate ticket count for each movie
         for (PaymentHistory payment : payments) {
-            ShowTime showTime = payment.getShowtime();
+            ShowTime showTime = payment.getShowTime();
             Movie movie = showTime.getMovie();
 
             Integer ticketCount = payment.getSumTicket();
@@ -236,7 +236,7 @@ public class PaymentService {
 
         // Process payments
         for (PaymentHistory payment : payments) {
-            ShowTime showTime = payment.getShowtime();
+            ShowTime showTime = payment.getShowTime();
             Movie movie = showTime.getMovie();
 
             // Ensure the movie exists in our map
