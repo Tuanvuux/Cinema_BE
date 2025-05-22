@@ -16,5 +16,4 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
     // Additional methods for filtering if needed
     List<PaymentHistory> findByUserUserId(Long userId);
 
-    List<PaymentHistory> findByBookingBookingId(Long bookingId);
 }
