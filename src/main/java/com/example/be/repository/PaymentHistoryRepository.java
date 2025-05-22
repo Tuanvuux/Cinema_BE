@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, Long> {
     // Find payments by date range
@@ -15,5 +17,5 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
     List<PaymentHistory> findByDateTransactionBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     // Additional methods for filtering if needed
     List<PaymentHistory> findByUserUserId(Long userId);
-
+    Optional<PaymentHistory> findByPaymentId(Long paymentId);
 }

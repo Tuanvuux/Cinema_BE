@@ -2,9 +2,11 @@ package com.example.be.controller;
 
 import com.example.be.config.MomoConfig;
 
+import com.example.be.service.PaymentService;
 import com.example.be.utils.HmacUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +20,8 @@ import java.util.*;
 public class MomoController {
 
     private final MomoConfig momoConfig;
+    @Autowired
+    private PaymentService paymentService;
 
     @PostMapping("/momo")
     public ResponseEntity<?> createPayment(@RequestParam long amount, @RequestParam String orderId) throws Exception {
@@ -62,30 +66,26 @@ public class MomoController {
     @GetMapping("/momo-return")
     public void momoReturn(@RequestParam Map<String, String> params, HttpServletResponse response) throws IOException {
         String resultCode = params.get("resultCode");
-        String redirectUrl;
+        String orderId = params.get("orderId"); // lấy orderId từ params
 
+        String redirectUrl;
         if ("0".equals(resultCode)) {
-            // Thanh toán thành công
-            redirectUrl = "https://shiny-vacherin-d266c6.netlify.app/user/payment-success";
+            //redirectUrl = "http://localhost:5173/user/payment-success?orderId=" + orderId;
+            redirectUrl = "https://shiny-vacherin-d266c6.netlify.app/user/payment-success?orderId=" + orderId;
         } else {
-            // Thanh toán thất bại
-            redirectUrl = "https://shiny-vacherin-d266c6.netlify.app/user/payment-failed";
+            //redirectUrl = "http://localhost:5173/user/payment-failed?orderId=" + orderId;
+            redirectUrl = "https://shiny-vacherin-d266c6.netlify.app/payment-failed?orderId=" + orderId;
         }
 
-        // Redirect về giao diện frontend
         response.sendRedirect(redirectUrl);
     }
+
 
     @PostMapping("/momo-ipn")
     public ResponseEntity<String> momoIpn(@RequestBody Map<String, Object> data) {
         String resultCode = String.valueOf(data.get("resultCode"));
         String orderId = (String) data.get("orderId");
-
-        if ("0".equals(resultCode)) {
-            // TODO: Cập nhật trạng thái đơn hàng
-            System.out.println("Đơn hàng " + orderId + " thanh toán thành công.");
-        }
-
+        paymentService.updatePaymentStatus(orderId, resultCode);
         return ResponseEntity.ok("Received");
     }
 }

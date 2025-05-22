@@ -55,16 +55,20 @@ public class BookingService {
     @Transactional
     public void unlockSeat(Long showtimeId, Long seatId) {
         Booking seatSelection = bookingRepository.findByShowTimeIdAndSeatId(showtimeId, seatId);
-        if (seatSelection != null) {
+
+        if (seatSelection != null && seatSelection.getSeatStatus() == SeatStatus.SELECTED) {
             bookingRepository.delete(seatSelection);
 
-            // Gửi thông báo WebSocket cập nhật trạng thái ghế
+            // Xóa Redis
+            String key = "seat:" + showtimeId + ":" + seatId;
+            redisTemplate.delete(key);
+
+            // Gửi WebSocket: chỉ gửi nếu thực sự unlock
             messagingTemplate.convertAndSend("/topic/seats/" + showtimeId,
                     new SeatStatusResponse("Ghế tự động mở do hết hạn", seatId, SeatStatus.AVAILABLE, seatSelection.getUserId()));
 
-            // Xóa key Redis liên quan nếu còn
-            String key = "seat:" + showtimeId + ":" + seatId;
-            redisTemplate.delete(key);
+        } else {
+            System.out.println("⚠️ Không unlock ghế " + seatId + " vì không ở trạng thái SELECTED.");
         }
     }
 
