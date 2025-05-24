@@ -6,6 +6,7 @@ import com.example.be.dto.MovieViewsReportDTO;
 import com.example.be.dto.request.PaymentHistoryRequestDTO;
 import com.example.be.dto.response.PaymentDTOResponse;
 import com.example.be.dto.response.PaymentDetailDTO;
+import com.example.be.dto.response.PaymentHistoryDTO;
 import com.example.be.dto.response.PaymentResponseDTO;
 import com.example.be.entity.*;
 import com.example.be.enums.SeatStatus;
@@ -42,6 +43,8 @@ public class PaymentService {
     private SeatRepository seatRepository;
     @Autowired
     private SeatStatusBroadcaster seatStatusBroadcaster;
+    @Autowired
+    private EmailService emailService;
 
     public List<PaymentResponseDTO> getAllPayments() {
         List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
@@ -384,6 +387,15 @@ public class PaymentService {
                 updateBookedSeats(payment.getUser().getUserId(), payment.getShowTime().getShowtimeId());
 
                 // Lưu thông tin từng ghế vào bảng payment_detail
+                String email = payment.getUser().getEmail(); // lấy email từ user
+                String subject = "Xác nhận thanh toán thành công";
+                String htmlContent = "<h3>Chào " + payment.getUser().getUsername() + ",</h3>" +
+                        "<p>Bạn đã thanh toán thành công đơn hàng #" + payment.getPaymentId() + "</p>" +
+                        "<p>Số vé: " + payment.getSumTicket() + "</p>" +
+                        "<p>Tổng tiền: " + payment.getSumPrice() + " VNĐ</p>" +
+                        "<p>Cảm ơn bạn đã sử dụng dịch vụ!</p>";
+
+                emailService.sendTicketInformation(email, subject, htmlContent);
 
 
                 System.out.println("✅ Đã cập nhật trạng thái thanh toán và lưu chi tiết ghế cho đơn hàng #" + paymentId);
@@ -442,5 +454,35 @@ public class PaymentService {
         paymentDetailRepository.saveAll(details);
     }
 
+    public PaymentHistoryDTO getPaymentHistoryById(Long paymentId) {
+        PaymentHistory history = paymentHistoryRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thanh toán"));
+
+        ShowTime showTime = history.getShowTime();
+        Room room = showTime.getRoom();
+        User user = history.getUser();
+
+        return PaymentHistoryDTO.builder()
+                .paymentId(history.getPaymentId())
+                .dateTransaction(history.getDateTransaction())
+                .sumTicket(history.getSumTicket())
+                .sumPrice(history.getSumPrice())
+                .methodPayment(history.getMethodPayment())
+                .status(history.getStatus())
+                .userId(user.getUserId())
+                .movieTitle(showTime.getMovie().getName())
+                .roomName(room.getName()) // ⚠ đảm bảo bạn dùng đúng tên trường
+                .showDate(showTime.getShowDate())
+                .startTime(showTime.getStartTime())
+
+                .paymentDetails(history.getPaymentDetails().stream()
+                        .map(detail -> PaymentDetailDTO.builder()
+                                .id(detail.getId())
+                                .seatName(detail.getSeat().getSeatName())
+                                .price(detail.getPrice())
+                                .build())
+                        .toList())
+                .build();
+    }
 
 }

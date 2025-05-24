@@ -70,10 +70,10 @@ public class MomoController {
 
         String redirectUrl;
         if ("0".equals(resultCode)) {
-            //redirectUrl = "http://localhost:5173/user/payment-success?orderId=" + orderId;
+//            redirectUrl = "http://localhost:5173/user/payment-success?orderId=" + orderId;
             redirectUrl = "https://shiny-vacherin-d266c6.netlify.app/user/payment-success?orderId=" + orderId;
         } else {
-            //redirectUrl = "http://localhost:5173/user/payment-failed?orderId=" + orderId;
+//            redirectUrl = "http://localhost:5173/user/payment-failed?orderId=" + orderId;
             redirectUrl = "https://shiny-vacherin-d266c6.netlify.app/payment-failed?orderId=" + orderId;
         }
 
