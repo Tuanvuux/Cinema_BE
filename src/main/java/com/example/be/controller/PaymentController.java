@@ -5,6 +5,7 @@ import com.example.be.dto.MovieRevenueReportDTO;
 import com.example.be.dto.MovieViewsReportDTO;
 import com.example.be.dto.request.PaymentHistoryRequestDTO;
 import com.example.be.dto.response.PaymentDTOResponse;
+import com.example.be.dto.response.PaymentHistoryDTO;
 import com.example.be.dto.response.PaymentResponseDTO;
 import com.example.be.entity.PaymentHistory;
 import com.example.be.service.PaymentService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/payments")
@@ -77,5 +79,10 @@ public class PaymentController {
         PaymentHistory newPaymentHistory = paymentService.createPayment(dto);
         PaymentDTOResponse paymentDTOResponse = paymentService.convertPaymentDTO(newPaymentHistory);
         return ResponseEntity.ok(paymentDTOResponse);
+    }
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<PaymentHistoryDTO> getPaymentHistoryById(@PathVariable Long paymentId) {
+        PaymentHistoryDTO dto = paymentService.getPaymentHistoryById(paymentId);
+        return ResponseEntity.ok(dto);
     }
 }
