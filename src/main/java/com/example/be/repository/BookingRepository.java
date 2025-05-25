@@ -15,6 +15,8 @@ import java.util.List;
         void deleteByUserIdAndShowTimeIdAndSeatIdAndSeatStatus(Long userId, Long showTimeId, Long seatId, SeatStatus seatStatus);
         List<Booking> findByShowTimeId(Long showTimeId);
         List<Booking> findByShowTimeIdAndSeatStatus(Long showTimeId, SeatStatus seatStatus);
+        List<Booking> findByUserIdAndShowTimeIdAndSeatStatus(Long userId, Long showTimeId, SeatStatus seatStatus);
+
 
     }
 

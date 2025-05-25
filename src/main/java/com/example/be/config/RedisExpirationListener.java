@@ -27,7 +27,6 @@ public class RedisExpirationListener implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         String expiredKey = new String(message.getBody());
 
-        // Chỉ quan tâm tới key dạng "seat-lock:{showtimeId}:{seatId}"
         if (expiredKey.startsWith("seat:")) {
             String[] parts = expiredKey.split(":");
             if (parts.length == 3) {
@@ -35,23 +34,15 @@ public class RedisExpirationListener implements MessageListener {
                     Long showtimeId = Long.parseLong(parts[1]);
                     Long seatId = Long.parseLong(parts[2]);
 
+                    // Chỉ gọi unlock, không gửi WebSocket ở đây
                     seatLockService.unlockSeat(showtimeId, seatId);
-                    System.out.println("TTL expired, auto-unlocked seat: " + expiredKey);
 
-                    Map<String, Object> seatStatus = new HashMap<>();
-                    seatStatus.put("seatId", seatId);
-                    seatStatus.put("status", "AVAILABLE");
-
-                    messagingTemplate.convertAndSend(
-                            "/topic/seats/" + showtimeId,
-                            seatStatus
-                    );
+                    System.out.println("TTL expired, tried unlocking seat: " + expiredKey);
 
                 } catch (NumberFormatException e) {
                     System.err.println("Failed to parse key: " + expiredKey);
                 }
             }
         }
-
     }
 }

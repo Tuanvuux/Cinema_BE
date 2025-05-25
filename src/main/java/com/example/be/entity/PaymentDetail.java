@@ -26,4 +26,5 @@ public class PaymentDetail {
     private Seat seat;
 
     private BigDecimal price;
+
 }

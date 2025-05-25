@@ -6,8 +6,10 @@ import com.example.be.dto.MovieViewsReportDTO;
 import com.example.be.dto.request.PaymentHistoryRequestDTO;
 import com.example.be.dto.response.PaymentDTOResponse;
 import com.example.be.dto.response.PaymentDetailDTO;
+import com.example.be.dto.response.PaymentHistoryDTO;
 import com.example.be.dto.response.PaymentResponseDTO;
 import com.example.be.entity.*;
+import com.example.be.enums.SeatStatus;
 import com.example.be.exception.ResourceNotFoundException;
 import com.example.be.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,14 @@ public class PaymentService {
     private UserRepository userRepository;
     @Autowired
     private RoomRepository roomRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+    @Autowired
+    private SeatRepository seatRepository;
+    @Autowired
+    private SeatStatusBroadcaster seatStatusBroadcaster;
+    @Autowired
+    private EmailService emailService;
 
     public List<PaymentResponseDTO> getAllPayments() {
         List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
@@ -359,4 +369,120 @@ public class PaymentService {
         paymentDTOResponse.setSumPrice(paymentHistory.getSumPrice());
         return paymentDTOResponse;
     }
+    public void updatePaymentStatus(String orderIdStr, String result) {
+        if (!"0".equals(result)) return;
+
+        try {
+            Long paymentId = Long.parseLong(orderIdStr);
+            Optional<PaymentHistory> optional = paymentHistoryRepository.findByPaymentId(paymentId);
+
+            if (optional.isPresent()) {
+                PaymentHistory payment = optional.get();
+
+                payment.setStatus("SUCCESS");
+                payment.setDateTransaction(LocalDateTime.now());
+                paymentHistoryRepository.save(payment);
+                savePaymentDetails(payment.getUser().getUserId(), payment.getShowTime().getShowtimeId(), payment);
+                // Cập nhật ghế
+                updateBookedSeats(payment.getUser().getUserId(), payment.getShowTime().getShowtimeId());
+
+                // Lưu thông tin từng ghế vào bảng payment_detail
+                String email = payment.getUser().getEmail(); // lấy email từ user
+                String subject = "Xác nhận thanh toán thành công";
+                String htmlContent = "<h3>Chào " + payment.getUser().getUsername() + ",</h3>" +
+                        "<p>Bạn đã thanh toán thành công đơn hàng #" + payment.getPaymentId() + "</p>" +
+                        "<p>Số vé: " + payment.getSumTicket() + "</p>" +
+                        "<p>Tổng tiền: " + payment.getSumPrice() + " VNĐ</p>" +
+                        "<p>Cảm ơn bạn đã sử dụng dịch vụ!</p>";
+
+                emailService.sendTicketInformation(email, subject, htmlContent);
+
+
+                System.out.println("✅ Đã cập nhật trạng thái thanh toán và lưu chi tiết ghế cho đơn hàng #" + paymentId);
+
+            } else {
+                System.out.println("⚠️ Không tìm thấy đơn hàng #" + paymentId);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("❌ orderId không hợp lệ: " + orderIdStr);
+        }
+    }
+
+    public void updateBookedSeats(Long userId, Long showtimeId) {
+        // Tìm các ghế đang được user giữ
+        List<Booking> selectedSeats = bookingRepository
+                .findByUserIdAndShowTimeIdAndSeatStatus(userId, showtimeId, SeatStatus.SELECTED);
+
+        // Cập nhật trạng thái thành BOOKED
+        for (Booking booking : selectedSeats) {
+            booking.setSeatStatus(SeatStatus.BOOKED);
+        }
+        bookingRepository.saveAll(selectedSeats);
+
+        // Gửi sự kiện WebSocket thông báo các ghế đã được BOOKED
+        List<Long> bookedSeatIds = selectedSeats.stream()
+                .map(Booking::getSeatId)
+                .collect(Collectors.toList());
+
+        seatStatusBroadcaster.broadcastSeatBooked(showtimeId, bookedSeatIds);
+
+        System.out.println("🎟️ Đã cập nhật trạng thái ghế về BOOKED và gửi WebSocket cho user khác");
+    }
+    public void savePaymentDetails(Long userId, Long showtimeId, PaymentHistory payment) {
+        List<Booking> selectedSeats = bookingRepository
+                .findByUserIdAndShowTimeIdAndSeatStatus(userId, showtimeId, SeatStatus.SELECTED);
+
+        List<PaymentDetail> details = new ArrayList<>();
+
+        for (Booking booking : selectedSeats) {
+            Optional<Seat> seatOptional = seatRepository.findById(booking.getSeatId());
+
+            if (seatOptional.isPresent()) {
+                Seat seat = seatOptional.get();
+
+                PaymentDetail detail = new PaymentDetail();
+                detail.setPaymentHistory(payment);
+                detail.setSeat(seat);
+                detail.setPrice(seat.getSeatInfo().getPrice()); // hoặc giá cố định nếu không có trong Seat
+
+                details.add(detail);
+            } else {
+                System.err.println("⚠️ Không tìm thấy ghế với ID: " + booking.getSeatId());
+            }
+        }
+
+        paymentDetailRepository.saveAll(details);
+    }
+
+    public PaymentHistoryDTO getPaymentHistoryById(Long paymentId) {
+        PaymentHistory history = paymentHistoryRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thanh toán"));
+
+        ShowTime showTime = history.getShowTime();
+        Room room = showTime.getRoom();
+        User user = history.getUser();
+
+        return PaymentHistoryDTO.builder()
+                .paymentId(history.getPaymentId())
+                .dateTransaction(history.getDateTransaction())
+                .sumTicket(history.getSumTicket())
+                .sumPrice(history.getSumPrice())
+                .methodPayment(history.getMethodPayment())
+                .status(history.getStatus())
+                .userId(user.getUserId())
+                .movieTitle(showTime.getMovie().getName())
+                .roomName(room.getName()) // ⚠ đảm bảo bạn dùng đúng tên trường
+                .showDate(showTime.getShowDate())
+                .startTime(showTime.getStartTime())
+
+                .paymentDetails(history.getPaymentDetails().stream()
+                        .map(detail -> PaymentDetailDTO.builder()
+                                .id(detail.getId())
+                                .seatName(detail.getSeat().getSeatName())
+                                .price(detail.getPrice())
+                                .build())
+                        .toList())
+                .build();
+    }
+
 }

@@ -31,20 +31,15 @@ public class PaymentHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
+    @ToString.Exclude
     private User user;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "booking_id", referencedColumnName = "bookingId")
-//    private Booking booking;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId")
-//    private ShowTime showtime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id", referencedColumnName = "showtimeId")
+    @ToString.Exclude
     private ShowTime showTime;
 
     @OneToMany(mappedBy = "paymentHistory", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<PaymentDetail> paymentDetails;
 }
