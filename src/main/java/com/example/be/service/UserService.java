@@ -33,18 +33,19 @@ public class UserService {
 
     private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
 
-    public void registerEmployee(EmployeeRequest request) {
+    public boolean registerEmployee(EmployeeRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Tên nhân viên đã tồn tại!");
+            return false; // Username đã tồn tại
         }
-
         User user = new User();
         user.setFullName(request.getFullName());
         user.setUsername(request.getUsername());
         user.setRole(Role.EMPLOYEE.toString());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
+        return true;
     }
+
 
     public UserInforDTO findByUsername(String username){
         UserInforDTO userInforDTO = new UserInforDTO();
