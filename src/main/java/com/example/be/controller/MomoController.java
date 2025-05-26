@@ -2,6 +2,7 @@ package com.example.be.controller;
 
 import com.example.be.config.MomoConfig;
 
+import com.example.be.constants.AppConstants;
 import com.example.be.service.PaymentService;
 import com.example.be.utils.HmacUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -70,11 +71,9 @@ public class MomoController {
 
         String redirectUrl;
         if ("0".equals(resultCode)) {
-//            redirectUrl = "http://localhost:5173/user/payment-success?orderId=" + orderId;
-            redirectUrl = "https://shiny-vacherin-d266c6.netlify.app/user/payment-success?orderId=" + orderId;
+            redirectUrl = AppConstants.Client_URL+"/user/payment-success?orderId=" + orderId;
         } else {
-//            redirectUrl = "http://localhost:5173/user/payment-failed?orderId=" + orderId;
-            redirectUrl = "https://shiny-vacherin-d266c6.netlify.app/payment-failed?orderId=" + orderId;
+            redirectUrl = AppConstants.Client_URL+"/payment-failed?orderId=" + orderId;
         }
 
         response.sendRedirect(redirectUrl);

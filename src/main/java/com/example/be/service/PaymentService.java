@@ -388,7 +388,7 @@ public class PaymentService {
 
                 // Lưu thông tin từng ghế vào bảng payment_detail
                 String email = payment.getUser().getEmail(); // lấy email từ user
-                String subject = "Xác nhận thanh toán thành công";
+                String subject = "[CineX] Xác nhận thanh toán thành công";
                 String htmlContent = "<h3>Chào " + payment.getUser().getUsername() + ",</h3>" +
                         "<p>Bạn đã thanh toán thành công đơn hàng #" + payment.getPaymentId() + "</p>" +
                         "<p>Số vé: " + payment.getSumTicket() + "</p>" +

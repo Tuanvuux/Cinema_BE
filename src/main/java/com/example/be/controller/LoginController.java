@@ -14,7 +14,6 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         UserResponse userResponse = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
@@ -23,7 +22,11 @@ public class LoginController {
                     .body("Tên đăng nhập hoặc mật khẩu không chính xác!");
         }
 
-        // Đăng nhập thành công, trả về token
+        if (Boolean.FALSE.equals(userResponse.getIsActive())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Tài khoản bị khóa hoặc chưa được kích hoạt!");
+        }
         return ResponseEntity.ok(userResponse);
     }
+
 }

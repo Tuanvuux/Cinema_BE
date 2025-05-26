@@ -17,5 +17,6 @@ public class UserResponse {
     private String role;
     private String gender;
     private String token;
+    private Boolean isActive = true;
 
 }

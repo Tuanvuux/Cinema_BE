@@ -40,6 +40,7 @@ public class LoginService {
             userResponse.setToken(token);
             userResponse.setFullName(user.getFullName());
             userResponse.setGender(user.getGender());
+            userResponse.setIsActive(user.getIsActive());
             return userResponse;
         }
 

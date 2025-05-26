@@ -4,6 +4,7 @@ import com.example.be.dto.request.SeatReleaseRequest;
 import com.example.be.dto.request.SeatSelectionRequest;
 import com.example.be.dto.response.SeatDTO;
 import com.example.be.dto.response.SeatWithLockResponse;
+import com.example.be.entity.LockSeatByShowTime;
 import com.example.be.entity.Room;
 import com.example.be.entity.Seat;
 import com.example.be.entity.SeatInfo;
@@ -75,6 +76,11 @@ public class SeatController {
     @GetMapping("/admin/countseat")
     public long countSeats() {
         return seatService.countSeat();
+    }
+
+    @GetMapping("/maintenance/{showtimeId}")
+    public List<Long> getMaintenanceSeats(@PathVariable long showtimeId){
+        return seatService.getMaintenanceSeats(showtimeId);
     }
 
 }
