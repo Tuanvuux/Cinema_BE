@@ -11,7 +11,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws") // endpoint WebSocket
-                .setAllowedOrigins("http://localhost:5173", "https://shiny-vacherin-d266c6.netlify.app") // ✅ Cho phép frontend React kết nối
+                .setAllowedOrigins("http://localhost:5173", "https://cinex-cinema.netlify.app") // ✅ Cho phép frontend React kết nối
                 .withSockJS(); // dùng SockJS nếu frontend dùng SockJS
     }
 
