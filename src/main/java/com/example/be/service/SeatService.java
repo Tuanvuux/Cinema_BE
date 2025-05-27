@@ -2,12 +2,10 @@ package com.example.be.service;
 
 import com.example.be.dto.response.SeatDTO;
 import com.example.be.dto.response.SeatWithLockResponse;
-import com.example.be.entity.Room;
-import com.example.be.entity.Seat;
-import com.example.be.entity.SeatInfo;
-import com.example.be.entity.ShowTime;
+import com.example.be.entity.*;
 import com.example.be.enums.SeatStatus;
 import com.example.be.enums.SeatType;
+import com.example.be.repository.LockSeatByShowTimeRepository;
 import com.example.be.repository.BookingRepository;
 import com.example.be.repository.SeatInfoRepository;
 import com.example.be.repository.SeatRepository;
@@ -36,7 +34,8 @@ public class SeatService {
 
     @Autowired
     private SeatInfoRepository seatInfoRepository;
-
+    @Autowired
+    private LockSeatByShowTimeRepository lockSeatByShowTimeRepository;
 
     public void selectSeat(String showtimeId, String seatId) {
         // Lógica chọn ghế, ví dụ: lưu trạng thái ghế vào Redis
@@ -187,6 +186,8 @@ public class SeatService {
         Optional<Seat> seat = seatRepository.findBySeatNameAndRoom_Id(seatName, roomId);
         return seat.isPresent();
     }
-
+    public List<Long> getMaintenanceSeats(long showtimeId){
+        return lockSeatByShowTimeRepository.findSeatIdsByShowtimeIdAndStatusInvalid(showtimeId);
+    }
 
 }
