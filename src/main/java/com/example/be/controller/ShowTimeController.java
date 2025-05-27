@@ -100,5 +100,9 @@ public class ShowTimeController {
         return showTimeService.getAvailableRooms(showDate, startTime, endTime);
     }
 
-
+    @GetMapping("/admin/check-exist-booked/{showtimeId}")
+    public ResponseEntity<Boolean> checkShowTimeExists(@PathVariable Long showtimeId) {
+        boolean exists = showTimeService.checkBookedShowtime(showtimeId);
+        return ResponseEntity.ok(exists);
+    }
 }

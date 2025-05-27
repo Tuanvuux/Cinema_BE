@@ -3,6 +3,7 @@ package com.example.be.controller;
 import com.example.be.entity.Room;
 import com.example.be.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,6 +48,11 @@ public class RoomController {
     @GetMapping("/admin/countroom")
     public long sumRoom() {
         return roomService.countRoom();
+    }
+    @GetMapping("/admin/can-change-status/{roomId}")
+    public ResponseEntity<?> checkIfCanChangeRoomStatus(@PathVariable Long roomId) {
+        boolean canChange = roomService.canChangeRoomStatus(roomId);
+        return ResponseEntity.ok(canChange);
     }
 }
 

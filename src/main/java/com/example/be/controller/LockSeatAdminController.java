@@ -5,6 +5,7 @@ import com.example.be.dto.response.SeatDTO;
 import com.example.be.entity.LockSeatByShowTime;
 import com.example.be.entity.Seat;
 import com.example.be.entity.ShowTime;
+import com.example.be.service.BookingService;
 import com.example.be.service.SeatLockAdminService;
 import com.example.be.service.SeatService;
 import com.example.be.service.ShowTimeService;
@@ -24,7 +25,6 @@ public class LockSeatAdminController {
     private SeatLockAdminService seatLockAdminService;
     @Autowired
     private ShowTimeService showTimeService;
-
 
     @GetMapping("/admin")
     public ResponseEntity<List<LockSeatAdminDTO>> getAllLockSeatAdmin(){
@@ -74,4 +74,10 @@ public class LockSeatAdminController {
     public LockSeatAdminDTO addLockSeatAdmin(@RequestBody LockSeatAdminDTO seatDTO) {
         return seatLockAdminService.addLockSeatAdminDTO(seatDTO);
     }
+    @GetMapping("/admin/check-seat-booked/{seatId}")
+    public ResponseEntity<Boolean> checkSeatBooked(@PathVariable Long seatId) {
+        boolean isBooked = seatLockAdminService.isSeatBooked(seatId);
+        return ResponseEntity.ok(isBooked);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.example.be.service;
 import com.example.be.dto.response.LockSeatAdminDTO;
 import com.example.be.dto.response.SeatDTO;
 import com.example.be.entity.*;
+import com.example.be.repository.BookingRepository;
 import com.example.be.repository.LockSeatByShowTimeRepository;
 import com.example.be.repository.SeatRepository;
 import com.example.be.repository.ShowTimeRepository;
@@ -24,6 +25,8 @@ public class SeatLockAdminService {
     private ShowTimeRepository showTimeRepository;
     @Autowired
     private SeatService seatService;
+    @Autowired
+    private BookingRepository bookingRepository;
 
     public List<LockSeatByShowTime> getLockSeatAdmin(){
         return lcstRepository.findAll();
@@ -81,4 +84,7 @@ public class SeatLockAdminService {
         return convertToDTO(savedSeat);
     }
 
+    public boolean isSeatBooked(Long seatId) {
+        return bookingRepository.existsBySeatId(seatId);
+    }
 }

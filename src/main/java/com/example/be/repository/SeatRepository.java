@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, Long> {
@@ -15,4 +16,5 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     @Query("SELECT s FROM Seat s WHERE s.room.id = (SELECT st.room.id FROM ShowTime st WHERE st.showtimeId = :showtimeId)")
     List<Seat> findSeatsByShowtimeId(@Param("showtimeId") Long showtimeId);
+    Optional<Seat> findBySeatNameAndRoom_Id(String seatName, Long roomId);
 }

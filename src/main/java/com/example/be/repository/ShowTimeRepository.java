@@ -48,4 +48,6 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
     List<ShowTime> findByRoomFromToday(@Param("roomId") Long roomId,
                                        @Param("today")  LocalDate today);
 
+    @Query("SELECT s.movie.name FROM ShowTime s WHERE s.showtimeId = :showtimeId")
+    String findMovieNameByShowtimeId(Long showtimeId);
 }

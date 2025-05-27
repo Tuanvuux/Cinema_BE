@@ -8,6 +8,7 @@ import com.example.be.entity.SeatInfo;
 import com.example.be.entity.ShowTime;
 import com.example.be.enums.SeatStatus;
 import com.example.be.enums.SeatType;
+import com.example.be.repository.BookingRepository;
 import com.example.be.repository.SeatInfoRepository;
 import com.example.be.repository.SeatRepository;
 import com.example.be.repository.ShowTimeRepository;
@@ -35,6 +36,7 @@ public class SeatService {
 
     @Autowired
     private SeatInfoRepository seatInfoRepository;
+
 
     public void selectSeat(String showtimeId, String seatId) {
         // Lógica chọn ghế, ví dụ: lưu trạng thái ghế vào Redis
@@ -181,5 +183,10 @@ public class SeatService {
     public long countSeat(){
         return seatRepository.count();
     }
+    public boolean isSeatExistsInRoom(String seatName, Long roomId) {
+        Optional<Seat> seat = seatRepository.findBySeatNameAndRoom_Id(seatName, roomId);
+        return seat.isPresent();
+    }
+
 
 }
