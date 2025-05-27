@@ -14,6 +14,7 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         UserResponse userResponse = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
