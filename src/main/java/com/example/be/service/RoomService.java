@@ -1,6 +1,7 @@
 package com.example.be.service;
 
 import com.example.be.entity.Room;
+import com.example.be.repository.BookingRepository;
 import com.example.be.repository.RoomRepository;
 import com.example.be.repository.ShowTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ public class RoomService {
     private RoomRepository roomRepository;
     @Autowired
     private ShowTimeRepository showTimeRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
 
     public Room addRoom(Room room) {
         return roomRepository.save(room);
@@ -45,4 +48,13 @@ public class RoomService {
         return roomRepository.count();
     }
 
+    public boolean canChangeRoomStatus(Long roomId) {
+        boolean hasShowtimes = bookingRepository.existsShowtimeByRoomId(roomId);
+        if (!hasShowtimes) {
+            return true; // Phòng chưa có lịch chiếu -> có thể thay đổi trạng thái
+        }
+
+        boolean hasBookedSeats = bookingRepository.existsBookingByRoomIdWithBookedSeats(roomId);
+        return !hasBookedSeats; // Nếu không có vé đã đặt -> có thể thay đổi
+    }
 }

@@ -6,10 +6,12 @@ import com.example.be.exception.CustomerException;
 import com.example.be.repository.MovieRepository;
 import com.example.be.service.MovieService;
 import com.example.be.service.CategoryService;
+import com.example.be.service.ShowTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,8 @@ public class MovieController {
 
     @Autowired
     private CategoryService categoryService; // Dịch vụ lấy thể loại
+    @Autowired
+    private ShowTimeService showTimeService;
 
     @GetMapping
     public List<Movie> getAllMovies() {
@@ -98,4 +102,13 @@ public class MovieController {
         return movieService.countMovies();
     }
 
+    @GetMapping("/admin/{movieId}/release-date")
+    public LocalDate getReleaseDate(@PathVariable Long movieId) {
+        return movieService.getReleaseDateByMovieId(movieId);
+    }
+    @GetMapping("/admin/movie-name-by-showtime/{showtimeId}")
+    public ResponseEntity<Boolean> getMovieName(@PathVariable Long showtimeId) {
+        Boolean movieName = showTimeService.getMovieNameByShowtimeId(showtimeId);
+        return ResponseEntity.ok(movieName);
+    }
 }

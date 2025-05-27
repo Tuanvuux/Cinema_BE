@@ -6,6 +6,7 @@ import com.example.be.entity.*;
 import com.example.be.enums.SeatStatus;
 import com.example.be.enums.SeatType;
 import com.example.be.repository.LockSeatByShowTimeRepository;
+import com.example.be.repository.BookingRepository;
 import com.example.be.repository.SeatInfoRepository;
 import com.example.be.repository.SeatRepository;
 import com.example.be.repository.ShowTimeRepository;
@@ -180,6 +181,10 @@ public class SeatService {
     }
     public long countSeat(){
         return seatRepository.count();
+    }
+    public boolean isSeatExistsInRoom(String seatName, Long roomId) {
+        Optional<Seat> seat = seatRepository.findBySeatNameAndRoom_Id(seatName, roomId);
+        return seat.isPresent();
     }
     public List<Long> getMaintenanceSeats(long showtimeId){
         return lockSeatByShowTimeRepository.findSeatIdsByShowtimeIdAndStatusInvalid(showtimeId);

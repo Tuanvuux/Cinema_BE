@@ -10,6 +10,7 @@ import com.example.be.entity.Seat;
 import com.example.be.entity.SeatInfo;
 import com.example.be.service.RoomService;
 import com.example.be.service.SeatService;
+import com.example.be.service.ShowTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,6 +26,8 @@ public class SeatController {
     private final SeatService seatService;
     @Autowired
     private final SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private ShowTimeService showTimeService;
 
     public SeatController(SeatService seatService, SimpMessagingTemplate messagingTemplate) {
         this.seatService = seatService;
@@ -77,10 +80,18 @@ public class SeatController {
     public long countSeats() {
         return seatService.countSeat();
     }
-
     @GetMapping("/maintenance/{showtimeId}")
     public List<Long> getMaintenanceSeats(@PathVariable long showtimeId){
         return seatService.getMaintenanceSeats(showtimeId);
+    }
+
+    @GetMapping("/admin/check-exist/{seatName}/{roomId}")
+    public ResponseEntity<?> checkSeatExists(
+            @PathVariable String seatName,
+            @PathVariable Long roomId
+    ) {
+        boolean exists = seatService.isSeatExistsInRoom(seatName, roomId);
+        return ResponseEntity.ok().body(exists);
     }
 
 }

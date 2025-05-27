@@ -5,6 +5,7 @@ import com.example.be.dto.response.ShowTimeResponse;
 import com.example.be.entity.Movie;
 import com.example.be.entity.Room;
 import com.example.be.entity.ShowTime;
+import com.example.be.repository.BookingRepository;
 import com.example.be.repository.MovieRepository;
 import com.example.be.repository.RoomRepository;
 import com.example.be.repository.ShowTimeRepository;
@@ -29,6 +30,8 @@ public class ShowTimeService {
     private MovieService movieService;
     @Autowired
     private RoomService roomService;
+    @Autowired
+    private BookingRepository bookingRepository;
 
 
     public ShowTime addShowtime(ShowTime showtime){
@@ -44,6 +47,9 @@ public class ShowTimeService {
     }
 
     public ShowTime updateShowtime(Long id, ShowTime showtimeDetails) {
+        if (bookingRepository.existsByShowTimeId(id)) {
+            throw new IllegalStateException("Không thể chỉnh sửa lịch chiếu vì đã có người đặt vé.");
+        }
         ShowTime existingShowtime = getShowtimeId(id);
 
         // Lấy movie từ database dựa theo ID
@@ -195,4 +201,15 @@ public class ShowTimeService {
     public List<ShowTime> getShowtimesByRoom(Long roomId){
         return showTimeRepository.findByRoomFromToday(roomId, LocalDate.now());
     }
+
+    public boolean getMovieNameByShowtimeId(Long showtimeId) {
+        return showTimeRepository.findById(showtimeId)
+                .map(showTime -> showTime.getMovie() != null)
+                .orElse(false);
+    }
+
+    public boolean checkBookedShowtime(Long id){
+        return bookingRepository.existsByShowTimeId(id);
+    }
+
 }
