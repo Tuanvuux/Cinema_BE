@@ -36,4 +36,11 @@ public class EmailService {
             System.err.println("❌ Lỗi khi gửi email: " + e.getMessage());
         }
     }
+    public void sendResetPasswordEmail(String toEmail, String resetLink) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Đặt lại mật khẩu");
+        message.setText("Nhấn vào liên kết sau để đặt lại mật khẩu: \n" + resetLink);
+        mailSender.send(message);
+    }
 }
