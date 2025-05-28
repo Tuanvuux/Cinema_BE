@@ -47,7 +47,7 @@ public class PaymentService {
     private EmailService emailService;
 
     public List<PaymentResponseDTO> getAllPayments() {
-        List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
+        List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAllWithNonNullStatus();
         return paymentHistories.stream()
                 .map(this::convertToPaymentResponseDTO)
                 .collect(Collectors.toList());

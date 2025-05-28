@@ -18,4 +18,6 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
     // Additional methods for filtering if needed
     List<PaymentHistory> findByUserUserId(Long userId);
     Optional<PaymentHistory> findByPaymentId(Long paymentId);
+    @Query("SELECT p FROM PaymentHistory p WHERE p.Status IS NOT NULL")
+    List<PaymentHistory> findAllWithNonNullStatus();
 }
