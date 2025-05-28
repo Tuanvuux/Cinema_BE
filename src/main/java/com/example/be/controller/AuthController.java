@@ -1,9 +1,9 @@
 package com.example.be.controller;
-import com.example.be.dto.request.EmployeeRequest;
-import com.example.be.dto.request.UserRequest;
-import com.example.be.dto.request.VerifyRequest;
+import com.example.be.dto.request.*;
+import com.example.be.dto.response.UserResponse;
 import com.example.be.entity.User;
 import com.example.be.repository.UserRepository;
+import com.example.be.service.LoginService;
 import com.example.be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +19,9 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LoginService loginService;
+
 
     // Đăng ký + gửi mã xác nhận
     @PostMapping("/register")
@@ -57,6 +60,32 @@ public class AuthController {
     public ResponseEntity<?> checkUsernameExists(@PathVariable String username) {
         boolean exists = userRepository.existsByUsername(username);
         return ResponseEntity.ok(exists);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        UserResponse userResponse = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
+
+        if (userResponse == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Tên đăng nhập hoặc mật khẩu không chính xác!");
+        }
+
+        if (Boolean.FALSE.equals(userResponse.getIsActive())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Tài khoản bị khóa hoặc chưa được kích hoạt!");
+        }
+        return ResponseEntity.ok(userResponse);
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        loginService.processForgotPassword(request.getEmail());
+        return ResponseEntity.ok("Email đặt lại mật khẩu đã được gửi.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        loginService.resetPassword(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công.");
     }
 
 }

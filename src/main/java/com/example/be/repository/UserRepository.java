@@ -20,5 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE UPPER(u.role) = UPPER(:role)")
     List<User> findAllByRole(@Param("role") String role);
+    User findByEmail(String email);
 
 }
