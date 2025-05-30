@@ -13,6 +13,7 @@ import com.example.be.enums.SeatStatus;
 import com.example.be.exception.ResourceNotFoundException;
 import com.example.be.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,6 +46,9 @@ public class PaymentService {
     private SeatStatusBroadcaster seatStatusBroadcaster;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
 
     public List<PaymentResponseDTO> getAllPayments() {
         List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAllWithNonNullStatus();
@@ -165,64 +169,6 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
-//    public List<MovieDetailReportDTO> getMovieDetailReport(LocalDate startDate, LocalDate endDate) {
-//        List<PaymentHistory> payments = getPaymentsInDateRange(startDate, endDate);
-//        List<ShowTime> showTimes = getShowTimesInDateRange(startDate, endDate);
-//
-//        Map<Movie, MovieDetailStats> movieStatsMap = new HashMap<>();
-//
-//        // Trước tiên xử lý tất cả các phim có payment trong khoảng thời gian
-//        for (PaymentHistory payment : payments) {
-//            if (payment.getShowtime() != null && payment.getShowtime().getMovie() != null) {
-//                Movie movie = payment.getShowtime().getMovie();
-//
-//                // Đảm bảo phim tồn tại trong map
-//                movieStatsMap.putIfAbsent(movie, new MovieDetailStats());
-//
-//                // Cập nhật doanh thu và số vé
-//                MovieDetailStats stats = movieStatsMap.get(movie);
-//                stats.addRevenue(payment.getSumPrice());
-//                stats.addTicketCount(payment.getSumTicket());
-//            }
-//        }
-//
-//        // Sau đó xử lý showtime cho những phim đã có trong map hoặc chưa có payment
-//        for (ShowTime showTime : showTimes) {
-//            Movie movie = showTime.getMovie();
-//
-//            // Đảm bảo phim tồn tại trong map
-//            movieStatsMap.putIfAbsent(movie, new MovieDetailStats());
-//
-//            // Cập nhật số suất chiếu
-//            movieStatsMap.get(movie).incrementShowtimeCount();
-//
-//            // Cập nhật sức chứa phòng
-//            movieStatsMap.get(movie).addRoomCapacity(calculateRoomCapacity(showTime.getRoom().getId()));
-//        }
-//
-//        // Chuyển đổi sang DTO và trả về kết quả
-//        return movieStatsMap.entrySet().stream()
-//                .map(entry -> {
-//                    MovieDetailStats stats = entry.getValue();
-//                    Movie movie = entry.getKey();
-//
-//                    // Tính tỷ lệ lấp đầy
-//                    int occupancyRate = 0;
-//                    if (stats.getTotalCapacity() > 0) {
-//                        occupancyRate = (int) ((double) stats.getTicketCount() / stats.getTotalCapacity() * 100);
-//                    }
-//
-//                    return new MovieDetailReportDTO(
-//                            movie.getMovieId(),
-//                            movie.getName(),
-//                            stats.getRevenue(),
-//                            stats.getTicketCount(),
-//                            stats.getShowtimeCount(),
-//                            occupancyRate);
-//                })
-//                .sorted(Comparator.comparing(MovieDetailReportDTO::getRevenue).reversed())
-//                .collect(Collectors.toList());
-//    }
 
     public List<MovieDetailReportDTO> getMovieDetailReport(LocalDate startDate, LocalDate endDate) {
         List<PaymentHistory> payments = getPaymentsInDateRange(startDate, endDate);
@@ -385,7 +331,7 @@ public class PaymentService {
                 savePaymentDetails(payment.getUser().getUserId(), payment.getShowTime().getShowtimeId(), payment);
                 // Cập nhật ghế
                 updateBookedSeats(payment.getUser().getUserId(), payment.getShowTime().getShowtimeId());
-
+                removeHeldSeatsFromRedis(payment.getUser().getUserId(), payment.getShowTime().getShowtimeId());
                 // Lưu thông tin từng ghế vào bảng payment_detail
                 String email = payment.getUser().getEmail(); // lấy email từ user
                 String subject = "[CineX] Xác nhận thanh toán thành công";
@@ -483,6 +429,17 @@ public class PaymentService {
                                 .build())
                         .toList())
                 .build();
+    }
+    public void removeHeldSeatsFromRedis(Long userId, Long showtimeId) {
+        List<Booking> selectedSeats = bookingRepository
+                .findByUserIdAndShowTimeIdAndSeatStatus(userId, showtimeId, SeatStatus.BOOKED);
+
+        for (Booking booking : selectedSeats) {
+            String redisKey = String.format("seat:%d:%d", showtimeId, booking.getSeatId());
+            redisTemplate.delete(redisKey);
+        }
+
+        System.out.println("🧹 Đã xóa các key Redis giữ ghế sau khi thanh toán thành công.");
     }
 
 }
