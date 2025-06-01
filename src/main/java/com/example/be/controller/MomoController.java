@@ -73,7 +73,7 @@ public class MomoController {
         if ("0".equals(resultCode)) {
             redirectUrl = AppConstants.Client_URL+"/user/payment-success?orderId=" + orderId;
         } else {
-            redirectUrl = AppConstants.Client_URL+"/payment-failed?orderId=" + orderId;
+            redirectUrl = AppConstants.Client_URL+"/user/payment-failed?orderId=" + orderId;
         }
 
         response.sendRedirect(redirectUrl);
