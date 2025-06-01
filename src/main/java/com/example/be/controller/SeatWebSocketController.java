@@ -83,7 +83,8 @@ public class SeatWebSocketController {
         List<Long> extended = seatLockService.extendSeatLocks(
                 request.getShowtimeId(),
                 request.getUserId(),
-                request.getSeatIds()
+                request.getSeatIds(),
+                request.getExtendTime()
         );
 
         return ResponseEntity.ok().body("Đã gia hạn " + extended.size() + " ghế: " + extended);

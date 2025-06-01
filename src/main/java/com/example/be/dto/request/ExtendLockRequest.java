@@ -8,4 +8,5 @@ public class ExtendLockRequest {
     private Long showtimeId;
     private Long userId;
     private List<Long> seatIds;
+    private int extendTime;
 }
