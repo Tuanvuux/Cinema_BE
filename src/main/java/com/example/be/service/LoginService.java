@@ -93,4 +93,16 @@ public class LoginService {
     public boolean findAccount(String username) {
         return userRepository.existsByUsername(username);
     }
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomerException(ErrorConstants.ACCOUNT_NOT_FOUND));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new CustomerException("Mật khẩu cũ không đúng!");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
 }
