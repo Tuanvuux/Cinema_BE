@@ -8,6 +8,7 @@ import com.example.be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -86,6 +87,11 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         loginService.resetPassword(request.getToken(), request.getNewPassword());
         return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công.");
+    }
+    @PostMapping("/change-password")
+    public String changePassword(@RequestBody ChangePasswordRequest request) {
+        loginService.changePassword(request.getUserId(), request.getOldPassword(), request.getNewPassword());
+        return "Đổi mật khẩu thành công!";
     }
 
 }
