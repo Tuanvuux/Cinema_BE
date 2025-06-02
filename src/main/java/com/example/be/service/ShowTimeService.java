@@ -23,7 +23,6 @@ public class ShowTimeService {
     @Autowired
     private MovieRepository movieRepository;
 
-
     @Autowired
     private RoomRepository roomRepository;
     @Autowired
@@ -202,10 +201,8 @@ public class ShowTimeService {
         return showTimeRepository.findByRoomFromToday(roomId, LocalDate.now());
     }
 
-    public boolean getMovieNameByShowtimeId(Long showtimeId) {
-        return showTimeRepository.findById(showtimeId)
-                .map(showTime -> showTime.getMovie() != null)
-                .orElse(false);
+    public boolean getMovieNameByShowtimeId(Long movieId) {
+        return showTimeRepository.existsByMovie_MovieId(movieId);
     }
 
     public boolean checkBookedShowtime(Long id){

@@ -50,4 +50,5 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
 
     @Query("SELECT s.movie.name FROM ShowTime s WHERE s.showtimeId = :showtimeId")
     String findMovieNameByShowtimeId(Long showtimeId);
+    boolean existsByMovie_MovieId(Long movieId);
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface RoomRepository extends JpaRepository<Room, Long> {
     Room findById(long id);
     long count();
+    boolean existsByName(String name);
 }

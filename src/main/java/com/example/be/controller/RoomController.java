@@ -54,5 +54,10 @@ public class RoomController {
         boolean canChange = roomService.canChangeRoomStatus(roomId);
         return ResponseEntity.ok(canChange);
     }
+
+    @GetMapping("/admin/check-room-name")
+    public boolean checkRoomNameExists(@RequestParam String name) {
+        return roomService.isRoomNameExists(name);
+    }
 }
 

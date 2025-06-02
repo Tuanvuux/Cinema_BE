@@ -163,6 +163,8 @@ public class PostService {
         return postRepository.save(post);
     }
 
-
-
+    public String deletedPost(Long id){
+        postRepository.deleteById(id);
+        return "Post deleted successfully!";
+    }
 }

@@ -106,9 +106,9 @@ public class MovieController {
     public LocalDate getReleaseDate(@PathVariable Long movieId) {
         return movieService.getReleaseDateByMovieId(movieId);
     }
-    @GetMapping("/admin/movie-name-by-showtime/{showtimeId}")
-    public ResponseEntity<Boolean> getMovieName(@PathVariable Long showtimeId) {
-        Boolean movieName = showTimeService.getMovieNameByShowtimeId(showtimeId);
+    @GetMapping("/admin/movie-name-by-showtime/{movieId}")
+    public ResponseEntity<Boolean> getMovieName(@PathVariable Long movieId) {
+        Boolean movieName = showTimeService.getMovieNameByShowtimeId(movieId);
         return ResponseEntity.ok(movieName);
     }
 }
