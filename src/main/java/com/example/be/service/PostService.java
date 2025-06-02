@@ -26,7 +26,7 @@ public class PostService {
     public Post createPost(CreatePostRequest request) {
         Post post = new Post();
         post.setTitle(request.getTitle());
-        post.setCategory(request.getCategory());
+        post.setPostImage(request.getPostImage());
         post.setIntroParagraph(request.getIntroParagraph());
         post.setConclusion(request.getConclusion());
         post.setCreatedBy(request.getCreatedBy());
@@ -69,7 +69,7 @@ public class PostService {
         return new PostResponseDTO(
                 post.getId(),
                 post.getTitle(),
-                post.getCategory(),
+                post.getPostImage(),
                 post.getIntroParagraph(),
                 post.getConclusion(),
                 post.getCreatedAt(),
@@ -112,7 +112,7 @@ public class PostService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết với id: " + id));
 
         post.setTitle(request.getTitle());
-        post.setCategory(request.getCategory());
+        post.setPostImage(request.getPostImage());
         post.setIntroParagraph(request.getIntroParagraph());
         post.setConclusion(request.getConclusion());
         post.setUpdatedBy(request.getUpdatedBy ());

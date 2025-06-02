@@ -1,6 +1,5 @@
 package com.example.be.entity;
 
-import com.example.be.enums.PostCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,9 +20,7 @@ public class Post {
     private Long id;
 
     private String title;
-
-    @Enumerated(EnumType.STRING)
-    private PostCategory category;
+    private String postImage;
 
     @Lob
     private String introParagraph;
@@ -36,6 +33,7 @@ public class Post {
 
     private Long createdBy; // ID người đăng
     private Long updatedBy; // ID người chỉnh sửa cuối
+    private boolean isDelete;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostSection> sections;
