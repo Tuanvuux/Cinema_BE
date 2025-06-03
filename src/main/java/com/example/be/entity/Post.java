@@ -2,7 +2,6 @@ package com.example.be.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Post {
 
     @Id
@@ -31,9 +29,8 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Long createdBy; // ID người đăng
-    private Long updatedBy; // ID người chỉnh sửa cuối
-    private boolean isDelete;
+    private Long createdBy;
+    private Long updatedBy;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostSection> sections;

@@ -57,4 +57,7 @@ public class RoomService {
         boolean hasBookedSeats = bookingRepository.existsBookingByRoomIdWithBookedSeats(roomId);
         return !hasBookedSeats; // Nếu không có vé đã đặt -> có thể thay đổi
     }
+    public boolean isRoomNameExists(String roomName) {
+        return roomRepository.existsByName(roomName);
+    }
 }
