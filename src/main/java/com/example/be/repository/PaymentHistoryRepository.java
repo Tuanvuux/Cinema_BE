@@ -20,4 +20,17 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
     Optional<PaymentHistory> findByPaymentId(Long paymentId);
     @Query("SELECT p FROM PaymentHistory p WHERE p.Status IS NOT NULL")
     List<PaymentHistory> findAllWithNonNullStatus();
+    @Query("""
+    SELECT DISTINCT ph FROM PaymentHistory ph
+    JOIN FETCH ph.showTime st
+    JOIN FETCH st.movie
+    JOIN FETCH st.room
+    JOIN FETCH ph.paymentDetails pd
+    JOIN FETCH pd.seat
+    WHERE ph.user.userId = :userId
+      AND ph.Status = 'SUCCESS'
+""")
+    List<PaymentHistory> findSuccessfulPaymentsByUserId(@Param("userId") Long userId);
+
+
 }
