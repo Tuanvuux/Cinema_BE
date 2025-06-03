@@ -35,8 +35,13 @@ public class PostController {
     }
     @PutMapping("/admin/{postId}")
     public ResponseEntity<PostResponseDTO> updatePost(@PathVariable Long postId, @RequestBody CreatePostRequest dto) {
-        Post post = postService.updatePost(postId, dto);
-        PostResponseDTO response = postService.mapToPostResponseDTO(post);
+        PostResponseDTO response;
+        try {
+            Post post = postService.updatePost(postId, dto);
+            response = postService.mapToPostResponseDTO(post);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(response);
     }
     @DeleteMapping("/admin/{postId}")
