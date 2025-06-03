@@ -441,5 +441,35 @@ public class PaymentService {
 
         System.out.println("🧹 Đã xóa các key Redis giữ ghế sau khi thanh toán thành công.");
     }
+    public List<PaymentHistoryDTO> getSuccessfulPaymentHistoryByUserId(Long userId) {
+        List<PaymentHistory> paymentHistories = paymentHistoryRepository.findSuccessfulPaymentsByUserId(userId);
+
+        return paymentHistories.stream().map(history -> {
+            ShowTime showTime = history.getShowTime();
+            Room room = showTime.getRoom();
+
+            return PaymentHistoryDTO.builder()
+                    .paymentId(history.getPaymentId())
+                    .dateTransaction(history.getDateTransaction())
+                    .sumTicket(history.getSumTicket())
+                    .sumPrice(history.getSumPrice())
+                    .methodPayment(history.getMethodPayment())
+                    .status(history.getStatus())
+                    .userId(history.getUser().getUserId())
+                    .movieTitle(showTime.getMovie().getName())
+                    .roomName(room.getName())
+                    .showDate(showTime.getShowDate())
+                    .startTime(showTime.getStartTime())
+                    .paymentDetails(history.getPaymentDetails().stream()
+                            .map(detail -> PaymentDetailDTO.builder()
+                                    .id(detail.getId())
+                                    .seatName(detail.getSeat().getSeatName())
+                                    .price(detail.getPrice())
+                                    .build())
+                            .collect(Collectors.toList()))
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
 
 }

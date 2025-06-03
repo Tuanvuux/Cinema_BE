@@ -85,4 +85,9 @@ public class PaymentController {
         PaymentHistoryDTO dto = paymentService.getPaymentHistoryById(paymentId);
         return ResponseEntity.ok(dto);
     }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PaymentHistoryDTO>> getPaymentHistoryByUserId(@PathVariable long userId) {
+        List<PaymentHistoryDTO> paymentHistory = paymentService.getSuccessfulPaymentHistoryByUserId(userId);
+        return ResponseEntity.ok(paymentHistory);
+    }
 }
