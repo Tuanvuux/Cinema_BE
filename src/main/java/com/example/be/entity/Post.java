@@ -33,7 +33,6 @@ public class Post {
 
     private Long createdBy; // ID người đăng
     private Long updatedBy; // ID người chỉnh sửa cuối
-    private boolean isDelete;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostSection> sections;
