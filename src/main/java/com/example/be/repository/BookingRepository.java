@@ -2,7 +2,9 @@ package com.example.be.repository;
 
 import com.example.be.entity.Booking;
 import com.example.be.enums.SeatStatus;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -36,5 +38,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         WHERE st.room.id = :roomId AND (b.seatStatus = 'SELECTED' OR b.seatStatus = 'BOOKED')
     """)
     boolean existsBookingByRoomIdWithBookedSeats(@Param("roomId") Long roomId);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Booking b WHERE b.seatStatus = 'SELECTED' AND b.bookingTime <= :cutoffTime")
+    void deleteExpiredSelectedBookings(@Param("cutoffTime") LocalDateTime cutoffTime);
 }
 
