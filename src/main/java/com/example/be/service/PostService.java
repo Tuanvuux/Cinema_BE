@@ -115,20 +115,19 @@ public class PostService {
         post.setPostImage(request.getPostImage());
         post.setIntroParagraph(request.getIntroParagraph());
         post.setConclusion(request.getConclusion());
-        post.setUpdatedBy(request.getUpdatedBy ());
+        post.setUpdatedBy(request.getUpdatedBy());
         post.setUpdatedAt(LocalDateTime.now());
 
-
-        // Xóa tất cả section cũ
-        post.getSections().clear();
+        // Xóa các section cũ một cách an toàn (orphanRemoval = true)
+        List<PostSection> existingSections = post.getSections();
+        existingSections.clear();
 
         if (request.getSections() != null) {
-            List<PostSection> newSections = new ArrayList<>();
             for (var sectionDTO : request.getSections()) {
                 PostSection section = new PostSection();
                 section.setHeading(sectionDTO.getHeading());
                 section.setSectionOrder(sectionDTO.getSectionOrder());
-                section.setPost(post);
+                section.setPost(post); // liên kết ngược
 
                 // Paragraphs
                 List<PostParagraph> paragraphs = new ArrayList<>();
@@ -136,7 +135,7 @@ public class PostService {
                     PostParagraph paragraph = new PostParagraph();
                     paragraph.setContent(paraDTO.getContent());
                     paragraph.setParagraphOrder(paraDTO.getParagraphOrder());
-                    paragraph.setSection(section);
+                    paragraph.setSection(section); // liên kết ngược
                     paragraphs.add(paragraph);
                 }
 
@@ -147,22 +146,23 @@ public class PostService {
                     PostImage image = new PostImage();
                     image.setImageUrl(url);
                     image.setImageOrder(order++);
-                    image.setSection(section);
+                    image.setSection(section); // liên kết ngược
                     images.add(image);
                 }
 
                 section.setParagraphs(paragraphs);
                 section.setImages(images);
 
-                newSections.add(section);
+                existingSections.add(section); // thêm vào danh sách hiện tại
             }
-
-            post.setSections(newSections);
         }
 
         return postRepository.save(post);
     }
 
 
-
+    public String deletedPost(Long id){
+        postRepository.deleteById(id);
+        return "Post deleted successfully!";
+    }
 }

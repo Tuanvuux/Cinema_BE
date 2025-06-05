@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class PostSection {
 
     @Id
@@ -30,5 +29,4 @@ public class PostSection {
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImage> images;
-
 }

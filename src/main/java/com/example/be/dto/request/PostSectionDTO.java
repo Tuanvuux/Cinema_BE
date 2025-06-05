@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class PostSectionDTO {
+    private Long id;
     private String heading;
     private List<PostParagraphDTO> paragraphs = new ArrayList<>();
     private List<String> images  = new ArrayList<>();

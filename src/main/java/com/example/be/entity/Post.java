@@ -31,8 +31,8 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Long createdBy; // ID người đăng
-    private Long updatedBy; // ID người chỉnh sửa cuối
+    private Long createdBy;
+    private Long updatedBy;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostSection> sections;

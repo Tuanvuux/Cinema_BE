@@ -17,7 +17,7 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping("/admin")
     public ResponseEntity<PostResponseDTO> createPost(@RequestBody CreatePostRequest dto) {
         Post post = postService.createPost(dto);
         PostResponseDTO response = postService.mapToPostResponseDTO(post);
@@ -28,15 +28,24 @@ public class PostController {
         List<PostResponseDTO> response = postService.getAllPosts();
         return ResponseEntity.ok(response);
     }
-    @GetMapping("/{postId}")
+    @GetMapping("/admin/{postId}")
     public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Long postId) {
         PostResponseDTO response = postService.getPostById(postId);
         return ResponseEntity.ok(response);
     }
-    @PutMapping("/{postId}")
+    @PutMapping("/admin/{postId}")
     public ResponseEntity<PostResponseDTO> updatePost(@PathVariable Long postId, @RequestBody CreatePostRequest dto) {
-        Post post = postService.updatePost(postId, dto);
-        PostResponseDTO response = postService.mapToPostResponseDTO(post);
+        PostResponseDTO response;
+        try {
+            Post post = postService.updatePost(postId, dto);
+            response = postService.mapToPostResponseDTO(post);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(response);
+    }
+    @DeleteMapping("/admin/{postId}")
+    public String deletePost(@PathVariable Long postId) {
+        return postService.deletedPost(postId);
     }
 }
