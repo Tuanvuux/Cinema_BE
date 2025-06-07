@@ -12,6 +12,7 @@ import com.example.be.repository.ShowTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -202,7 +203,7 @@ public class ShowTimeService {
     }
 
     public boolean getMovieNameByShowtimeId(Long movieId) {
-        return showTimeRepository.existsByMovie_MovieId(movieId);
+        return showTimeRepository.existsUpcomingShowtimeByMovieId(movieId, LocalDateTime.now());
     }
 
     public boolean checkBookedShowtime(Long id){
