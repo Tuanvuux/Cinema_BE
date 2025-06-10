@@ -198,8 +198,17 @@ public class ShowTimeService {
         return convertToDTO(updateShowtime);
     }
 
+//    public List<ShowTime> getShowtimesByRoom(Long roomId){
+//        return showTimeRepository.findByRoomFromToday(roomId, LocalDate.now());
+//    }
+
     public List<ShowTime> getShowtimesByRoom(Long roomId){
-        return showTimeRepository.findByRoomFromToday(roomId, LocalDate.now());
+        LocalDateTime now = LocalDateTime.now();
+        return showTimeRepository.findByRoomFromToday(
+                roomId,
+                now.toLocalDate(),
+                now.toLocalTime()
+        );
     }
 
     public boolean getMovieNameByShowtimeId(Long movieId) {
