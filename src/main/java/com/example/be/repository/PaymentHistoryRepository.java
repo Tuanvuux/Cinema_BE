@@ -13,8 +13,11 @@ import java.util.Optional;
 @Repository
 public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, Long> {
     // Find payments by date range
-    @Query("SELECT p FROM PaymentHistory p WHERE p.DateTransaction BETWEEN :startDate AND :endDate")
-    List<PaymentHistory> findByDateTransactionBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT p FROM PaymentHistory p WHERE p.DateTransaction BETWEEN :startDate AND :endDate AND p.Status = 'SUCCESS'")
+    List<PaymentHistory> findByDateTransactionBetweenAndStatus(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
     // Additional methods for filtering if needed
     List<PaymentHistory> findByUserUserId(Long userId);
     Optional<PaymentHistory> findByPaymentId(Long paymentId);
@@ -31,6 +34,4 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
       AND ph.Status = 'SUCCESS'
 """)
     List<PaymentHistory> findSuccessfulPaymentsByUserId(@Param("userId") Long userId);
-
-
 }
