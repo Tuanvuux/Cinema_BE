@@ -91,7 +91,7 @@ public class PostService {
     }
     @Transactional(readOnly = true)
     public List<PostResponseDTO> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
+        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         return posts.stream()
                 .map(this::mapToPostResponseDTO)
                 .toList();
