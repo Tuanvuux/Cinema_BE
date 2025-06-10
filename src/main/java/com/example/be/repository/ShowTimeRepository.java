@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -50,5 +51,10 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
 
     @Query("SELECT s.movie.name FROM ShowTime s WHERE s.showtimeId = :showtimeId")
     String findMovieNameByShowtimeId(Long showtimeId);
-    boolean existsByMovie_MovieId(Long movieId);
+    @Query("SELECT COUNT(s) > 0 FROM ShowTime s " +
+            "WHERE s.movie.movieId = :movieId " +
+            "AND FUNCTION('TIMESTAMP', s.showDate, s.startTime) >= :now")
+    boolean existsUpcomingShowtimeByMovieId(@Param("movieId") Long movieId,
+                                            @Param("now") LocalDateTime now);
+
 }
