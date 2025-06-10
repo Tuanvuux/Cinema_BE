@@ -6,8 +6,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Modifying
     @Query("DELETE FROM PostSection ps WHERE ps.post.id = :postId")
     void deleteAllSectionsByPostId(@Param("postId") Long postId);
+    List<Post> findAllByOrderByCreatedAtDesc();
 }
