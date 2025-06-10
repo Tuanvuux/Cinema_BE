@@ -59,7 +59,7 @@ public class PaymentService {
 
 
     public List<PaymentResponseDTO> getPaymentsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        List<PaymentHistory> paymentHistories = paymentHistoryRepository.findByDateTransactionBetween(startDate, endDate);
+        List<PaymentHistory> paymentHistories = paymentHistoryRepository.findByDateTransactionBetweenAndStatus(startDate, endDate);
         return paymentHistories.stream()
                 .map(this::convertToPaymentResponseDTO)
                 .collect(Collectors.toList());
@@ -233,7 +233,7 @@ public class PaymentService {
     // Helper methods
     private List<PaymentHistory> getPaymentsInDateRange(LocalDate startDate, LocalDate endDate) {
         // Implementation depends on your repository methods
-        return paymentHistoryRepository.findByDateTransactionBetween(
+        return paymentHistoryRepository.findByDateTransactionBetweenAndStatus(
                 startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
     }
 
