@@ -14,4 +14,7 @@ public interface  MovieRepository  extends JpaRepository<Movie, Long> {
     long countByIsDeleteFalse();
     @Query("SELECT m.releaseDate FROM Movie m WHERE m.movieId = :movieId AND (m.isDelete = false OR m.isDelete IS NULL)")
     Optional<LocalDate> findReleaseDateByMovieId(@Param("movieId") Long movieId);
+
+    @Query("SELECT m.isDelete FROM Movie m WHERE m.movieId = :movieId")
+    Boolean getIsDeleteStatusByMovieId(@Param("movieId") Long movieId);
 }

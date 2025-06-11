@@ -105,4 +105,10 @@ public class ShowTimeController {
         boolean exists = showTimeService.checkBookedShowtime(showtimeId);
         return ResponseEntity.ok(exists);
     }
+
+    @GetMapping("/admin/check-isdelete-movie/{movieId}")
+    public ResponseEntity<Boolean> checkMovieIsDelete(@PathVariable Long movieId) {
+        Boolean movie = movieservice.existsMovieIsDelete(movieId);
+        return ResponseEntity.ok(movie);
+    }
 }
