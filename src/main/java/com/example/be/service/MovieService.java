@@ -38,4 +38,8 @@ public class MovieService {
         return movieRepository.findReleaseDateByMovieId(movieId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phim với ID: " + movieId));
     }
+
+    public Boolean existsMovieIsDelete(Long movieId) {
+        return movieRepository.getIsDeleteStatusByMovieId(movieId);
+    }
 }
