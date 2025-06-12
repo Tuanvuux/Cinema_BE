@@ -60,4 +60,7 @@ public class RoomService {
     public boolean isRoomNameExists(String roomName) {
         return roomRepository.existsByName(roomName);
     }
+    public boolean isStatus(Long roomId) {
+        return roomRepository.existsByIdAndStatusNot(roomId,"ACTIVE");
+    }
 }
