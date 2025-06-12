@@ -111,4 +111,9 @@ public class ShowTimeController {
         Boolean movie = movieservice.existsMovieIsDelete(movieId);
         return ResponseEntity.ok(movie);
     }
+    @GetMapping("/admin/check-inactive-room/{roomId}")
+    public ResponseEntity<Boolean> checkInActiveRoom(@PathVariable Long roomId) {
+        boolean exits = roomservice.isStatus(roomId);
+        return ResponseEntity.ok(exits);
+    }
 }
