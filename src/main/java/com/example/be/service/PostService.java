@@ -62,7 +62,7 @@ public class PostService {
                 post.getSections().add(section);
             }
         }
-
+    
         return postRepository.save(post);
     }
     public PostResponseDTO mapToPostResponseDTO(Post post) {
